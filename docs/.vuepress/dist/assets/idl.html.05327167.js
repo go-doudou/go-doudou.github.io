@@ -1,0 +1,1 @@
+const e={key:"v-05afbdb4",path:"/guide/idl.html",title:"Define API",lang:"en-US",frontmatter:{},excerpt:"",headers:[{level:2,title:"Benefits",slug:"benefits",children:[]},{level:2,title:"Limitations",slug:"limitations",children:[]},{level:2,title:"Example",slug:"example",children:[]}],git:{},filePathRelative:"guide/idl.md"};export{e as data};

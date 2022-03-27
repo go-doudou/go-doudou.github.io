@@ -1,0 +1,1 @@
+const e={key:"v-fffb8e28",path:"/guide/",title:"Introduction",lang:"en-US",frontmatter:{},excerpt:"",headers:[{level:3,title:"Why?",slug:"why",children:[]},{level:3,title:"Design Philosophy",slug:"design-philosophy",children:[]},{level:3,title:"Features",slug:"features",children:[]}],git:{},filePathRelative:"guide/README.md"};export{e as data};
