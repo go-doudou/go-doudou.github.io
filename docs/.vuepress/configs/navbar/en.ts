@@ -27,4 +27,8 @@ export const en: NavbarConfig = [
       },
     ],
   },
+  {
+    text: `中文`,
+    link: 'https://go-doudou.unionj.cloud',
+  },
 ]
