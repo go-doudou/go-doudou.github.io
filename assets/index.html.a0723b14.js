@@ -1,0 +1,1 @@
+const t={key:"v-744afcfe",path:"/orm/",title:"Introduction",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1656253083e3,contributors:[{name:"wubin1989",email:"328454505@qq.com",commits:1}]},filePathRelative:"orm/README.md"};export{t as data};

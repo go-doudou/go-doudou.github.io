@@ -1,0 +1,1 @@
+const e={key:"v-15dbe83a",path:"/orm/dsl.html",title:"SQL Query Builder",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1656253083e3,contributors:[{name:"wubin1989",email:"328454505@qq.com",commits:1}]},filePathRelative:"orm/dsl.md"};export{e as data};
