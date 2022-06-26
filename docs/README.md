@@ -1,6 +1,6 @@
 ---
 home: true
-title: go-doudou microservice fast development framework for golang
+title: go-doudou Lightweight Golang Microservice Development Framework
 heroImage: /hero.png
 actions:
   - text: Get Started

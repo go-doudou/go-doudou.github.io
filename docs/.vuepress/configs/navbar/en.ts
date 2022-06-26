@@ -7,6 +7,10 @@ export const en: NavbarConfig = [
     link: '/guide/',
   },
   {
+    text: 'ORM',
+    link: '/orm/',
+  },
+  {
     text: 'Resources',
     link: '/resources/',
   },

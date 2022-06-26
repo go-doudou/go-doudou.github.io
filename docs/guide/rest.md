@@ -552,3 +552,208 @@ networks:
 
 ### Screenshot
 ![grafana](/images/grafana.png)
+
+## Max Body Size
+
+It is definitely necessary to limit request body size in order to make service stable and safe. We can call package level static method `ddhttp.BodyMaxBytes` to meet the need.
+
+```go
+package main
+
+import (
+	...
+)
+
+func main() {
+	...
+
+	handler := httpsrv.NewOrdersvcHandler(svc)
+	srv := ddhttp.NewDefaultHttpSrv()
+	// Limit request body size not greater than 32M
+	srv.Use(ddhttp.BodyMaxBytes(32 << 20))
+	srv.AddRoute(httpsrv.Routes(handler)...)
+	srv.Run()
+}
+```
+
+## Gateway
+
+In project development, frontend may need to call multiple services. It is not convenient for frontend developers to configure `baseUrl`s one by one, so gateway comes to rescue. Frontend developers just need to configure one `baseUrl` of gateway service, then they can call different services by `/serviceName/apiUrl`. go-doudou provides an out-of-box middleware `ddhttp.Proxy` for the need.
+
+```go
+package main
+
+import (
+	...
+)
+
+func main() {
+	// gateway service itself must be registered to nacos server or memberlist cluster or both of them
+	err := registry.NewNode()
+	if err != nil {
+		logrus.Panic(fmt.Sprintf("%+v", err))
+	}
+	defer registry.Shutdown()
+
+	conf := config.LoadFromEnv()
+	svc := service.NewGateway(conf)
+	handler := httpsrv.NewGatewayHandler(svc)
+	srv := ddhttp.NewDefaultHttpSrv()
+	// Call ddhttp.Proxy method here 
+	// Done
+	srv.AddMiddleware(ddhttp.Proxy(ddhttp.ProxyConfig{}))
+	srv.AddRoute(httpsrv.Routes(handler)...)
+	srv.Run()
+}
+```
+
+`.env` config file example: 
+
+```shell
+GDD_SERVICE_NAME=gateway
+GDD_SERVICE_DISCOVERY_MODE=memberlist,nacos
+
+GDD_MEM_PORT=65353
+GDD_MEM_SEED=localhost:7946
+GDD_MEM_HOST=
+GDD_MEM_NAME=gateway
+
+GDD_NACOS_SERVER_ADDR=http://localhost:8848/nacos
+GDD_NACOS_NOT_LOAD_CACHE_AT_START=true
+```
+
+*Notice:* If you want go-doudou gateway service to route services developed by other framework or program language, you should make sure that `urlPrefix`(if any) should be passed to `metadata` as `rootPath` attribute value, otherwise there may be 404 error.
+
+## Request Validation
+
+go-doudou begins supporting request body and request parameter validation from v1.1.9 based on the most famous validation library [go-playground/validator](https://github.com/go-playground/validator).
+
+### Usage
+
+go-doudou built-in request validation mechanism is: 
+
+1. When defining service methods, pointer type parameters are not required, none-pointer type parameters are all required
+2. When defining service methods, you can add `@validate` [annotation]((./idl.html#注解)) in go doc and pass validation rules as annotation parameters
+3. When defining structs in `vo` package, you can add `validate` tag after each fields that should be validated
+
+In above 2 and 3, only valid `go-playground/validator` built-in validation rules and registered custom rules are supported. All validation related code will be generated in `handlerimpl.go` each time you run `go-doudou` cli command. You can read the code there. Only struct type (including pointer struct type) parameters will be validated by calling `func (v *Validate) Struct(s interface{}) error` method, other type parameters will be validated by calling `func (v *Validate) Var(field interface{}, tag string) error` method under the hood.
+
+There is an exported package level static function `func GetValidate() *validator.Validate` returning a `*validator.Validate` type singleton. Developers can call `go-playground/validator` apis directly to implement more complex and custom needs, like error message translation, custom validation rules etc. Please refer to `go-playground/validator` [official documentation](https://pkg.go.dev/github.com/go-playground/validator/v10) and [official examples](https://github.com/go-playground/validator/tree/master/_examples) to learn more advanced usage.
+
+### Example
+
+Method definition:
+
+```go
+// <b style="color: red">NEW</b> article create and update api
+// execute update operation if there is id parameter, otherwise execute create operation
+// @role(SUPER_ADMIN)
+Article(ctx context.Context, file *v3.FileModel,
+	// @validate(gt=0,lte=60)
+	title,
+	// @validate(gt=0,lte=1000)
+	content *string, tags *[]string, sort, status *int, id *int) (data string, err error)
+```
+
+Struct from `vo` package:
+
+```go
+type ArticleVo struct {
+	Id      int    `json:"id"`
+	Title   string `json:"title" validate:"required,gt=0,lte=60"`
+	Content string `json:"content"`
+	Link    string `json:"link" validate:"required,url"`
+	CreateAt string `json:"createAt"`
+	UpdateAt string `json:"updateAt"`
+}
+```
+
+Generated code:
+
+```go
+func (receiver *ArticleHandlerImpl) ArticleList(_writer http.ResponseWriter, _req *http.Request) {
+	var (
+		ctx     context.Context
+		payload vo.ArticlePageQuery
+		data    vo.ArticleRet
+		err     error
+	)
+	ctx = _req.Context()
+	if _req.Body == nil {
+		http.Error(_writer, "missing request body", http.StatusBadRequest)
+		return
+	} else {
+		if _err := json.NewDecoder(_req.Body).Decode(&payload); _err != nil {
+			http.Error(_writer, _err.Error(), http.StatusBadRequest)
+			return
+		} else {
+			if _err := ddhttp.ValidateStruct(payload); _err != nil {
+				http.Error(_writer, _err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+	}
+	...
+}
+```
+
+```go
+func (receiver *ArticleHandlerImpl) Article(_writer http.ResponseWriter, _req *http.Request) {
+	var (
+		ctx    context.Context
+		file   *v3.FileModel
+		title  *string
+		content    *string
+		tags   *[]string
+		sort   *int
+		status *int
+		id     *int
+		data   string
+		err    error
+	)
+	...
+	if _, exists := _req.Form["title"]; exists {
+		_title := _req.FormValue("title")
+		title = &_title
+		if _err := ddhttp.ValidateVar(title, "gt=0,lte=60", "title"); _err != nil {
+			http.Error(_writer, _err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+	if _, exists := _req.Form["content"]; exists {
+		_content := _req.FormValue("content")
+		content = &_content
+		if _err := ddhttp.ValidateVar(content, "gt=0,lte=1000", "content"); _err != nil {
+			http.Error(_writer, _err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+	...
+}
+```
+
+Error message translation
+
+```go
+package main
+
+import (
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
+	zhtrans "github.com/go-playground/validator/v10/translations/zh"
+	...
+)
+
+func main() {
+	...
+
+	uni := ut.New(zh.New())
+	trans, _ := uni.GetTranslator("zh")
+	ddhttp.SetTranslator(trans)
+	zhtrans.RegisterDefaultTranslations(ddhttp.GetValidate(), trans)
+
+	...
+
+	srv.Run()
+}
+```

@@ -1,6 +1,5 @@
 # Introduction
-Go-doudou（doudou pronounce /dəudəu/）is a gossip protocol based decentralized microservice
-framework. It supports monolith service application as well. Currently, it supports RESTful service only.
+Go-doudou（doudou pronounce /dəudəu/）is a lightweight golang microservice development framework. It supports monolith service application as well. Currently, it supports RESTful service only.
 
 ### Why?
 #### Background
