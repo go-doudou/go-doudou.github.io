@@ -3,7 +3,7 @@
 - Install go-doudou
 
 ```shell
-go get -v github.com/unionj-cloud/go-doudou@v1.1.9
+go get -v github.com/unionj-cloud/go-doudou@v1.3.3
 ```
 
 - Clone example repo, cd `ddldemo` directory

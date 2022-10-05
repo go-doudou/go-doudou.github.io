@@ -6,7 +6,7 @@ Go-doudou has built-in code generation CLI. `go-doudou` is the root command and 
 
 ```shell
 ➜  go-doudou.github.io git:(dev) ✗ go-doudou -v     
-go-doudou version v1.1.9
+go-doudou version v1.3.3
 ```
 
 - `-h` can print help message. As all subcommands have this flag, I will omit it in the following documentation. 
@@ -48,7 +48,7 @@ and asks you if you want to upgrade.
 ```shell
 ➜  go-doudou.github.io git:(dev) ✗ go-doudou version
 Installed version is v0.9.8
-Latest release version is v1.1.9
+Latest release version is v1.3.3
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Do you want to upgrade?: 
   ▸ Yes
@@ -162,6 +162,27 @@ ERRO[2022-02-18 11:56:09] 200 response definition not found in api Delete /pet/{
 ERRO[2022-02-18 11:56:09] 200 response definition not found in api Delete /store/order/{orderId} 
 ```
 :::
+
+### grpc
+
+`go-doudou svc grpc` is used to generate the `.proto` suffix file of `Protobuf v3` syntax, gRPC server and client piling code, etc. under the `transport/grpc` path. The `svcimpl.go` file is also generated if it does not exist, and incrementally updated if it already exists. If the `main.go` file does not exist in the `cmd` path, it will be generated, if it already exists, it will be skipped. The generated `main.go` file already has the relevant code to start the gRPC service.
+
+```shell
+...
+├── svc.go
+├── svcimpl.go
+├── transport
+│   ├── grpc
+│   │   ├── helloworld.pb.go
+│   │   ├── helloworld.proto
+│   │   └── helloworld_grpc.pb.go
+│   └── httpsrv
+│       ├── handler.go
+│       ├── handlerimpl.go
+│       └── middleware.go
+└── vo
+    └── vo.go
+```
 
 ### run
 

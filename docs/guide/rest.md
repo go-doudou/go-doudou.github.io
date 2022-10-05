@@ -626,7 +626,7 @@ GDD_NACOS_NOT_LOAD_CACHE_AT_START=true
 
 ## Request Validation
 
-go-doudou begins supporting request body and request parameter validation from v1.1.9 based on the most famous validation library [go-playground/validator](https://github.com/go-playground/validator).
+go-doudou begins supporting request body and request parameter validation from v1.3.3 based on the most famous validation library [go-playground/validator](https://github.com/go-playground/validator).
 
 ### Usage
 
