@@ -1,6 +1,6 @@
 # CLI
 
-Go-doudou has built-in code generation CLI. `go-doudou` is the root command and there are two flags for it.
+`go-doudou` has built-in code generation CLI. `go-doudou` is the root command and there are two flags for it.
 
 - `-v` can tell you current installed version of go-doudou.
 

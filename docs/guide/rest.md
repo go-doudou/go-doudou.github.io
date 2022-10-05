@@ -1,7 +1,7 @@
 # RESTful
 
 ## Service Register and Discovery
-Go-doudou has two options: `memberlist` and `nacos`. 
+`go-doudou` has two options: `memberlist` and `nacos`. 
 - `memberlist`: based on [SWIM gossip protocol](https://www.cs.cornell.edu/projects/Quicksilver/public_pdfs/SWIM.pdf), decentralized, peer to peer architecture, no leader election, forking from [hashicorp/memberlist](https://github.com/hashicorp/memberlist) and make some changes
 - [`nacos`](https://github.com/alibaba/nacos): centralized, leader-follower architecture, developed by alibaba
 
@@ -43,7 +43,7 @@ GDD_SERVICE_DISCOVERY_MODE=memberlist # Optional
 
 ### Nacos
 
-Go-doudou also has built-in support for Nacos developed by Alibaba as another option for service discovery.
+`go-doudou` also has built-in support for Nacos developed by Alibaba as another option for service discovery.
 
 First, add below code to `main` function.
 

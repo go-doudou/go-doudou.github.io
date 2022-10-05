@@ -1,7 +1,7 @@
 # Configuration
 
-Go-doudou supports dotenv and yaml format local configuration file, and Alibaba Nacos configuration center and Ctrip Apollo configuration center out-of-box.
-Go-doudou loads configuration from these sources to environment variables.
+`go-doudou` supports dotenv and yaml format local configuration file, and Alibaba Nacos configuration center and Ctrip Apollo configuration center out-of-box.
+`go-doudou` loads configuration from these sources to environment variables.
 
 Comparing with remote configuration center local configuration files have higher priority, so value of each environment variable loaded from local files won't be overridden by configuration from remote center.
 
@@ -45,7 +45,7 @@ Configuration Loading Rule:
 
 ## Remote Configuration Solution
 
-Go-doudou has built-in support for two remote configuration solution: Nacos from Alibaba and Apollo from Ctrip to load configuration when start and customize listener to react to config change event.
+`go-doudou` has built-in support for two remote configuration solution: Nacos from Alibaba and Apollo from Ctrip to load configuration when start and customize listener to react to config change event.
 
 To enable remote configuration support, you should configure below environment variable in local configuration file: 
 
@@ -59,7 +59,7 @@ be configured in runtime by reacting to change event from remote configuration c
 :::
 ### Nacos Configuration Center
 
-Go-doudou will load configuration from Nacos server when service start out-of-box. You just need to add some configuration in local configuration files.
+`go-doudou` will load configuration from Nacos server when service start out-of-box. You just need to add some configuration in local configuration files.
 
 - `GDD_NACOS_NAMESPACE_ID`: Nacos namespaceId, not required
 - `GDD_NACOS_SERVER_ADDR`: Nacos server connection url, required
@@ -91,7 +91,7 @@ func main() {
 
 ### Apollo Configuration Center
 
-Go-doudou will load configuration from Apollo server when service start out-of-box. You just need to add some configuration in local configuration files.
+`go-doudou` will load configuration from Apollo server when service start out-of-box. You just need to add some configuration in local configuration files.
 
 - `GDD_SERVICE_NAME`: Apollo AppId
 - `GDD_APOLLO_CLUSTER`: Apollo cluster, default is `default`
@@ -155,7 +155,7 @@ Red asterisk marked configuration can be dynamically changed in runtime by go-do
 | Environment Variable       | Description                                                                                                                                               | Default    | Required                                    |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------- |
 | GDD_BANNER                 | whether output banner to stdout or not to console                                                                                                         | true       |                                             |
-| GDD_BANNER_TEXT            |                                                                                                                                                           | Go-doudou  |                                             |
+| GDD_BANNER_TEXT            |                                                                                                                                                           | `go-doudou`  |                                             |
 | GDD_LOG_LEVEL              | possible values are panic, fatal, error, warn, warning, info, debug, trace                                                                                | info       |                                             |
 | GDD_LOG_FORMAT             | set log format to text or json, possible values are text and json                                                                                         | text       |                                             |
 | GDD_LOG_REQ_ENABLE         | enable request and response logging                                                                                                                       | false      |                                             |
@@ -172,7 +172,7 @@ Red asterisk marked configuration can be dynamically changed in runtime by go-do
 | GDD_MANAGE_ENABLE          | enable built-in api endpoints such as `/go-doudou/doc`, `/go-doudou/openapi.json`, `/go-doudou/prometheus`, `/go-doudou/registry` and `/go-doudou/config` | true       |                                             |
 | <span style="color: red; font-weight: bold;">*</span>GDD_MANAGE_USER            | http basic username for built-in api endpoints                                                                                                            | admin      |                                             |
 | <span style="color: red; font-weight: bold;">*</span>GDD_MANAGE_PASS            | http basic password for built-in api endpoints                                                                                                            | admin      |                                             |
-| GDD_TRACING_METRICS_ROOT   | metrics root for jaeger tracing                                                                                                                           | Go-doudou  |                                             |
+| GDD_TRACING_METRICS_ROOT   | metrics root for jaeger tracing                                                                                                                           | `go-doudou`  |                                             |
 | GDD_WEIGHT                 | service instance weight                                        | 1          |                                             |
 | GDD_SERVICE_DISCOVERY_MODE | service discovery mode, available options: `memberlist` and `nacos`      | memberlist |              |
 | GDD_ENABLE_RESPONSE_GZIP | enable http response gzip compression      | true |              |

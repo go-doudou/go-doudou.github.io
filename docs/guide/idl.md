@@ -1,6 +1,6 @@
 # Define API
 
-Go-doudou uses golang interface as IDL to let users define APIs.
+`go-doudou` uses golang interface as IDL to let users define APIs.
 
 ## Benefits
 - For go-doudou users, have a flattened learning curve.
@@ -18,7 +18,7 @@ If you don't specify, default is `POST`.
 4. As a special case, it supports `v3.FileModel` for uploading files as input parameter and `*os.File` for downloading files as output parameter.
 5. NOT support alias types as field of struct.
 6. NOT support func, channel and anonymous struct type as input and output parameter.
-7. Only request parameter `required` validation feature built-in, no struct field validation. Go-doudou treats pointer type as optional, non-pointer type as required. 
+7. Only request parameter `required` validation feature built-in, no struct field validation. `go-doudou` treats pointer type as optional, non-pointer type as required. 
 8. As for OpenAPI 3.0 documentation
 	- Not support documenting request headers and response headers, global parameters and authentication. You can write down these information 
 as golang comments immediately above service interface or corresponding methods in `svc.go` file, and these comments will be set to each `description` attribute in generated OpenAPI 3.0 json file and also be displayed in online api documentation.
@@ -220,13 +220,20 @@ func Auth(client authClient.IAuthClient) func(inner http.Handler) http.Handler {
 }
 ```
 
+## gRPC
+
+All the rules described above apply to defining gRPC services. In addition, there are two other remarks:
+
+- `oneof` of `Protobuf v3` is not supported yet
+- When defining the input and output parameters of the stream type, the parameter name must be prefixed with `stream`, for example: `stream1`, `stream2`, `streamReq`, `streamResp`, etc.
+
 ## More Examples
 ```go
 package service
 
 import (
 	"context"
-	v3 "github.com/unionj-cloud/go-doudou/openapi/v3"
+	v3 "github.com/unionj-cloud/`go-doudou`/openapi/v3"
 	"os"
 	"usersvc/vo"
 )
@@ -236,7 +243,7 @@ import (
 // You can add doc for whole service here
 type Usersvc interface {
 	// PageUsers is user pagination api
-	// demo how to define post request api which accepts application/json content-type
+	// show how to define post request api which accepts application/json content-type
 	// @role(user)
 	PageUsers(ctx context.Context,
 		// pagination parameter
@@ -247,7 +254,7 @@ type Usersvc interface {
 		err error)
 
 	// GetUser is user detail api
-	// demo how to define get http request with query string parameters
+	// show how to define get http request with query string parameters
 	GetUser(ctx context.Context,
 		// user id
 		userId int) (
@@ -257,7 +264,7 @@ type Usersvc interface {
 		err error)
 
 	// PublicSignUp is user signup api
-	// demo how to define post request api which accepts application/x-www-form-urlencoded content-type
+	// show how to define post request api which accepts application/x-www-form-urlencoded content-type
 	PublicSignUp(ctx context.Context,
 		// username
 		// @validate(gt=0,lte=60)
@@ -272,7 +279,7 @@ type Usersvc interface {
 		data string, err error)
 
 	// PublicLogIn is user login api
-	// demo how to do authentication and issue token
+	// show how to do authentication and issue token
 	PublicLogIn(ctx context.Context,
 		// username
 		username string,
@@ -282,7 +289,7 @@ type Usersvc interface {
 		data string, err error)
 
 	// UploadAvatar is avatar upload api
-	// demo how to define file upload api
+	// show how to define file upload api
 	// NOTE: there must be at least one []*v3.FileModel or *v3.FileModel input parameter
 	UploadAvatar(ctx context.Context,
 		// user avatar
@@ -291,12 +298,21 @@ type Usersvc interface {
 		data string, err error)
 
 	// GetPublicDownloadAvatar is avatar download api
-	// demo how to define file download api
+	// show how to define file download api
 	// NOTE: there must be one and at most one *os.File output parameter
 	GetPublicDownloadAvatar(ctx context.Context,
 		// user id
 		userId int) (
 		// avatar file
 		data *os.File, err error)
+
+	// BiStream show how to define bi-stream RPC
+	BiStream(ctx context.Context, stream vo.Order) (stream1 vo.Page, err error)
+
+	// ClientStream show how to define client-stream RPC
+	ClientStream(ctx context.Context, stream vo.Order) (data vo.Page, err error)
+
+	// ServerStream show how to define server-stream RPC
+	ServerStream(ctx context.Context, payload vo.Order) (stream vo.Page, err error)
 }
 ```

@@ -1,5 +1,5 @@
 # Introduction
-Go-doudou（doudou pronounce /dəudəu/）is a golang microservice framework for developing REST and gRPC services.
+`go-doudou`（doudou pronounce /dəudəu/）is a golang microservice framework for developing REST and gRPC services.
 
 ### Why?
 #### Background
@@ -11,7 +11,7 @@ After years of Go language development practice and technical framework research
 - Although a lot of learning materials about the syntax and best practices of Protobuf can be found online, we still feel that the learning curve is relatively steep, and we need a technical solution that can be quickly used by both novice and veteran.
 
 #### Result
-Go-doudou comes out, it's mainly inspired by 
+`go-doudou` comes out, it's mainly inspired by 
 - https://github.com/kujtimiihoxha/kit: a code generator cli for go-kit 
 - https://github.com/hashicorp/memberlist: golang package for gossip based membership and failure detection
 - https://spec.openapis.org/oas/v3.0.3: OpenAPI 3.0  

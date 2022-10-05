@@ -63,7 +63,7 @@ You need to change `myservice` to your image name
 
 ### Kubernetes
 
-Go-doudou has out-of-box support for Kubernetes.
+`go-doudou` has out-of-box support for Kubernetes.
 
 1. Run `go-doudou svc push` to build docker image and push to remote image repository. You will also get two generated k8s deployment yaml files, one is for `deployment` kind service, the other is for `statefulset` kind service
 
@@ -183,7 +183,7 @@ Please refer to [kubernetes](#kubernetes) to learn about deployment. Here are so
 
 3. If you still want to use memberlist service discovery mechanism, there are two options: `deployment` kind which is stateless and `statefulset` kind which is stateful.
 
-4. Go-doudou supports `deployment` kind and `statefulset` kind at the same time. You can deploy all of services to one kind or mix two kinds. 
+4. `go-doudou` supports `deployment` kind and `statefulset` kind at the same time. You can deploy all of services to one kind or mix two kinds. 
 
 5. Recommend to deploy seed instances as `statefulset` kind at least. Compare to `deployment` kind, `statefulset` kind container has fixed container name and `hostname`, you can configure a `headless` service endpoint to get a dns address directly locating to the container. The dns address pattern is `container-hostname.service-metadata-name.my-namespace.svc.cluster-domain.example`, for example, `seed-2.seed-svc-headless.default.svc.cluster.local`. Even if seed instances restarted by any possible reason, dns addresses won't be changed, you won't need to change the value of `GDD_MEM_SEED` environment variable for other instances, so you can get a more stable and more maintainable cluster. Please refer to [DNS for Services and Pods](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) to learn more.
 
