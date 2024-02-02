@@ -1,0 +1,1 @@
+const t={key:"v-744afcfe",path:"/orm/",title:"\u4ECB\u7ECD",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1706861284e3,contributors:[{name:"wubin1989",email:"328454505@qq.com",commits:2}]},filePathRelative:"orm/README.md"};export{t as data};
