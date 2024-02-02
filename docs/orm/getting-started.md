@@ -1,31 +1,30 @@
-# Getting Started
+# 快速开始
 
-- Install go-doudou
+- 安装go-doudou
 
 ```shell
-go get -v github.com/unionj-cloud/go-doudou@v1.3.3
+go install -v github.com/unionj-cloud/go-doudou/v2@v2.0.8
 ```
 
-- Clone example repo, cd `ddldemo` directory
+- 克隆示例代码，切到`ddldemo`路径
 
 ```shell
 git clone git@github.com:unionj-cloud/go-doudou-tutorials.git
 ```
 
-- Start mysql container
+- 启动mysql容器
 
 ```shell
 docker-compose -f docker-compose.yml up -d
 ```
 
-- Update table structure and generate dao layer code
+- 更新表结构和生成dao层代码
 
 ```shell
 go-doudou ddl --dao --pre=ddl_
 ```
 
-You can see below output from terminal:
-
+你可以看到如下的命令行输出:
 ```
 ➜  ddldemo git:(main) ls -la dao
 total 56
@@ -37,14 +36,13 @@ drwxr-xr-x  14 wubin1989  staff   448  9  1 00:28 ..
 -rw-r--r--   1 wubin1989  staff  5752  9  1 00:28 userdaosql.go
 ```
 
-- Run `main` function
+- 运行`main`函数
 
 ```shell
 go run main.go   
 ```
 
-You can see below output from terminal:
-
+你可以看到如下的命令行输出:
 ```
 ➜  ddldemo git:(master) go run main.go              
 time="2022-05-23 19:14:30" level=info msg="SQL: INSERT INTO `test`.`ddl_user` ( `id`, `name`, `phone`, `age`, `no`, `school`, `is_student`, `delete_at`, `avg_score`, `hobby`) VALUES ( '0', 'jack', '13552053960', '30', '0', null,
@@ -62,28 +60,26 @@ time="2022-05-23 19:14:30" level=info msg="returned user jack's average score is
 time="2022-05-23 19:14:30" level=info msg="SQL: delete from ddl_user where `age` > '27';"
 ```
 
-- Delete `domain` directory, `dao/userdaoimpl.go` and `dao/userdaosql.go` files, then run below command, we can see go code generated from table structures
+- 删除`domain`文件夹，`dao/userdaoimpl.go`文件和`dao/userdaosql.go`文件，并执行如下命令，我们来看从表结构生成`go`代码的特性
 
 ```shell
 go-doudou ddl --reverse --dao --pre=ddl_
 ```
 
-You can see below output from terminal:
-
+你可以看到如下的命令行输出:
 ```
 ➜  ddldemo git:(master) go-doudou ddl --reverse --dao --pre=ddl_
 WARN[2022-03-18 09:22:50] file /Users/wubin1989/workspace/cloud/go-doudou-tutorials/ddldemo/dao/base.go already exists 
 WARN[2022-03-18 09:22:50] file /Users/wubin1989/workspace/cloud/go-doudou-tutorials/ddldemo/dao/userdao.go already exists 
 ```
 
-- Run `main` function again
+- 再次执行`main`函数
 
 ```shell
 go run main.go   
 ```
 
-You can see below output from terminal:
-
+你可以看到如下的命令行输出:
 ```
 ➜  ddldemo git:(master) ✗ go run main.go              
 time="2022-05-23 19:15:25" level=info msg="SQL: INSERT INTO `test`.`ddl_user` ( `id`, `name`, `phone`, `age`, `no`, `school`, `is_student`, `delete_at`, `avg_score`, `hobby`) VALUES ( '0', 'jack', '13552053960', '30', '0', null, 

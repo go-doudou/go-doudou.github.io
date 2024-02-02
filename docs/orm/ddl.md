@@ -1,20 +1,20 @@
-# Cli and Code Generation
+# ddl工具与代码生成
 
-`go-doudou ddl` is table structure migration and dao layer code generation cli, supporting bidirection migration that is from go structs code to table structures and from table structures to go structs code.
+`go-doudou ddl`命令是表结构同步和生成单表dao层代码的命令行工具。其中表结构同步支持双向同步，即支持从go语言结构体创建和更新数据库表结构和从数据库表结构生成go语言结构体。
 
-## Features
+## 特性
 
-- Create/Update table from go struct
-- Create/Update go struct from table
-- Generate dao layer code with basic crud operations
-- Support transaction in dao layer
-- Support index update
-- Support foreign key
+- 从Go语言结构体类型创建或更新表结构，仅新增和更新字段，不删字段
+- 从表结构生成Go语言结构体
+- 生成支持单表CRUD操作的Dao层代码
+- Dao层代码支持数据库事务
+- 支持索引的创建和更新
+- 支持外键的创建和更新
 
-## Flags
+## 命令行参数
 
 ```shell
-➜  ~ go-doudou ddl -h
+➜  go-doudou git:(main) go-doudou ddl -h 
 migration tool between database table structure and golang struct
 
 Usage:
@@ -24,21 +24,21 @@ Flags:
   -d, --dao             If true, generate dao code.
       --df string       Name of dao folder. (default "dao")
       --domain string   Path of domain folder. (default "domain")
-      --env string      Path of database connection config .env file (default ".env")
+      --env string      Environment name such as dev, uat, test, prod, default is dev (default "dev")
   -h, --help            help for ddl
       --pre string      Table name prefix. e.g.: prefix biz_ for biz_product.
   -r, --reverse         If true, generate domain code from database. If false, update or create database tables from domain code.
 ```
 
-## Table Structure Migration
+## 表结构同步
 
-Command example for go structs code to table structures: `go-doudou ddl --pre=ddl_`, `--pre` flag is used to set table name prefix.
+从go语言结构体创建和更新数据库表结构命令示例：`go-doudou ddl --pre=ddl_`，`--pre`表示表名称前缀。
 
-Command example for table structures to go structs code: `go-doudou ddl --reverse --pre=ddl_`, must add `--reverse` or `-r` flag.
+从数据库表结构生成go语言结构体代码命令示例：`go-doudou ddl --reverse --pre=ddl_`，必须加`--reverse`或`-r`。
 
-Let's see some examples about tags.
+下面我们看一下从go语言结构体同步数据库表结构所需加的结构体标签。
 
-### Example
+### 示例
 ```go
 package domain
 
@@ -100,17 +100,17 @@ type User struct {
 
 ### pk
 
-Primary key
+表示主键
 
 ### auto
 
-Autoincrement
+表示自增
 
 ### type
 
-Column type. Not required. If you don't set this tag explicitly, default rule is as below table
+字段类型，非必须。如果没有显式设置，默认的对应规则如表格所示
 
-| Go Type（including pointer type） | Column Type  |
+| Go语言类型（包括指针类型） | Mysql字段类型  |
 | :----------------: | :----------: |
 | int, int16, int32  |     int      |
 |       int64        |    bigint    |
@@ -123,52 +123,56 @@ Column type. Not required. If you don't set this tag explicitly, default rule is
 
 ### default
 
-Default value. If value was database built-in function or expression made by built-in functions, not need single quote marks. If value was literal value, it should be quoted by single quote marks.
+默认值。如果是mysql数据库内置的函数或由内置函数构成的表达式，则不需要单引号。如果是字面值，则需要单引号。
 
 ### extra
 
-Extra definition. Example: "on update CURRENT_TIMESTAMP"，"comment 'cellphone number'"  
-**Note：don't use ; and : in comment**
+额外定义。示例："on update CURRENT_TIMESTAMP"，"comment 'cellphone number'"  
+**注意：在`comment`里不要出现英文分号`;`和英文冒号`:`**
 
 ### index
 
-- Format: "index:Name,Order,Sort" or "index"
-- `Name`: index name. string. If multiple fields use the same index name, the index will be created as composite index. Not required. Default index name is column name + _idx
-- `Order`:int
-- `Sort`: string. Only accept `asc` and `desc`. Not required. Default is asc
+设置索引。
+
+- 格式："index:Name,Order,Sort" or "index"
+- `Name`: 索引名称，字符串类型。如果有多个字段设置了相同的索引名称，则会在该表中创建复合索引。非必须。默认值为`字段名_idx`
+- `Order`: 顺序，`int`类型 
+- `Sort`: 排序规则，字符串类型。仅接受两种值：`asc` 和 `desc`。非必须。默认值是`asc`
 
 ### unique
 
-Unique index. Usage is the same as index.
+唯一索引，用法同索引。
 
 ### null
 
-Nullable. **Note: if the field is a pointer, null is default.**
+可接受`null`值. **注意：如果字段类型是指针类型，则默认可接受`null`值**
 
 ### unsigned
 
-Unsigned
+无符号
 
 ### fk
 
-- Format："fk:ReferenceTableName,ReferenceTablePrimaryKey,Constraint,Action"  
-- ReferenceTableName: reference table name
-- ReferenceTablePrimaryKey: reference table primary key such as `id`
-- Constraint: foreign key constraint such as `fk_publisher`
-- Action: for example: `ON DELETE CASCADE ON UPDATE NO ACTION`
+设置外键
 
-## Dao layer code
+- 格式："fk:ReferenceTableName,ReferenceTablePrimaryKey,Constraint,Action"  
+- `ReferenceTableName`：关联表名称
+- `ReferenceTablePrimaryKey`：关联表主键，如`id`
+- `Constraint`：外键名称，如`fk_publisher`
+- `Action`：示例：`ON DELETE CASCADE ON UPDATE NO ACTION`
 
-You need to add `--dao` flag to generate dao layer code, for example: `go-doudou ddl --dao --pre=ddl_`
+## Dao层代码生成
 
-### Single Table CRUD
+生成单表dao层代码时需要加上`--dao`，示例：`go-doudou ddl --dao --pre=ddl_`。
+
+### 单表CRUD
 
 ```go
 package dao
 
 import (
 	"context"
-	"github.com/unionj-cloud/go-doudou/toolkit/sqlext/query"
+	"github.com/unionj-cloud/go-doudou/v2/toolkit/sqlext/query"
 )
 
 type Base interface {
@@ -199,10 +203,9 @@ type Base interface {
 }
 ```
 
-### Transaction
+### 数据库事务
 
-Example:
-
+示例：
 ```go
 func (receiver *StockImpl) processExcel(ctx context.Context, f multipart.File, sheet string) (err error) {
 	types := []string{"food", "tool"}
@@ -221,8 +224,9 @@ func (receiver *StockImpl) processExcel(ctx context.Context, f multipart.File, s
 	}
 	colNum := len(rows[0])
 	rows = rows[1:]
+	// 封装数据库连接实例到GddDB类型
     gdddb := wrapper.NewGddDB(db, wrapper.WithLogger(logger.NewSqlLogger(log.Default())))
-	// begin transaction
+	// 开启事务
 	tx, err = gdddb.BeginTxx(ctx, nil)
 	if err != nil {
 		return errors.Wrap(err, "")
@@ -237,7 +241,7 @@ func (receiver *StockImpl) processExcel(ctx context.Context, f multipart.File, s
 			}
 		}
 	}()
-	// inject tx as ddl.Querier into dao layer implementation instance
+	// 将tx作为ddl.Querier实例注入dao层的工厂方法创建dao实例
 	mdao := dao.NewMaterialDao(tx)
 	for _, item := range rows {
 		if len(item) == 0 {
@@ -262,13 +266,13 @@ func (receiver *StockImpl) processExcel(ctx context.Context, f multipart.File, s
 			Type:        int8(sliceutils.IndexOf(sheet, types)),
 			Note:        note,
 		}); err != nil {
-			// rollback if err != nil
+			// 如果有错误，则回滚
 			_ = tx.Rollback()
 			return errors.Wrap(err, "")
 		}
 	}
 END:
-	// commit
+	// 提交事务
 	if err = tx.Commit(); err != nil {
         _ = tx.Rollback()
 		return errors.Wrap(err, "")
@@ -277,34 +281,34 @@ END:
 }
 ```
 
-### Hooks
+### 钩子函数
 
-There are 7 hooks from generated dao layer code for you to implement business logic yourself.
+ddl工具生成的dao层代码里提供了以下7个钩子函数，需用户自定义实现业务逻辑。
 
 ```go
-// for insert/upsert/update operations
+// 在 insert/upsert/update 操作中自动调用
 BeforeSaveHook(ctx context.Context, data interface{})
 AfterSaveHook(ctx context.Context, data interface{}, lastInsertID int64, affected int64)
 
-// for update many operations
+// 在 update many 操作中自动调用
 BeforeUpdateManyHook(ctx context.Context, data interface{}, where query.Q)
 AfterUpdateManyHook(ctx context.Context, data interface{}, where query.Q, affected int64)
 
-// for delete many operations
+// 在 delete many 操作中自动调用
 BeforeDeleteManyHook(ctx context.Context, data interface{}, where query.Q)
 AfterDeleteManyHook(ctx context.Context, data interface{}, where query.Q, affected int64)
 
-// for read many operations, such as SelectMany/CountMany/PageMany
+// 在 read many 操作中自动调用, 例如 SelectMany/CountMany/PageMany
 BeforeReadManyHook(ctx context.Context, page *query.Page, where ...query.Q)
 ```
 
-`query.Q` is an interface type parameter, you'd better pass pointer type concrete type paramter in order to easily modify query conditions.
+`query.Q`是接口类型的参数，建议传入指针类型的实现类型，方便修改查询条件。
 
-Example: 
+示例代码：
 
 ```go
-// add delete_at is null condition to each read operations
 func (receiver UserDaoImpl) BeforeReadManyHook(ctx context.Context, page *query.Page, where ...query.Q) {
+	// implement your business logic
 	if len(where) > 0 {
 		if criteria, ok := where[0].(*query.Criteria); ok {
 			*criteria = criteria.Col("delete_at").IsNull()
@@ -315,22 +319,22 @@ func (receiver UserDaoImpl) BeforeReadManyHook(ctx context.Context, page *query.
 }
 ```
 
-### Add Dao Layer Code
+### 新增dao层代码
 
-In development, we must need to write some custom dao layer CRUD code. How? Let me explain it using `user` table as an example: 
+实际开发中，我们一定需要自己编写一些更复杂的CRUD代码。怎么做呢？下面我们以`user`表为例来说明开发步骤：
 
-- At first, we should define methods of `UserDao` interface in `dao/userdao.go` file, for example:
+- 首先需要在`dao`文件夹下的`userdao.go`文件里的`UserDao`接口里定义方法，例如：
 ```go
 type UserDao interface {
 	Base
 	FindUsersByHobby(ctx context.Context, hobby string) ([]domain.User, error)
 }
 ```
-We defined a `FindUsersByHobby` method here
+我们这里加了一个`FindUsersByHobby`方法
 
-- Then we should create a new file named `userdaoimplext.go` in `dao` folder. The file name can be arbitrary, but recommend to name it by table name got rid of prefix + `daoimplext.go` pattern
+- 然后我们需要在`dao`文件夹下新建一个文件`userdaoimplext.go`，文件名任意，但推荐以去掉前缀的表名 + `daoimplext.go`的方式命名
 
-- We write our own implementation for `FindUsersByHobby` method in the new file
+- 在新创建的文件里编写`FindUsersByHobby`方法的实现
 ```go
 func (receiver UserDaoImpl) FindUsersByHobby(ctx context.Context, hobby string) (users []domain.User, err error) {
 	sqlStr := `select * from ddl_user where hobby = ? and delete_at is null`
@@ -338,7 +342,7 @@ func (receiver UserDaoImpl) FindUsersByHobby(ctx context.Context, hobby string) 
 	return
 }
 ```
-- We create a new file `userdaoimplext_test.go` to write unit tests
+- 我们新建一个测试文件`userdaoimplext_test.go`，编写单元测试
 ```go
 func TestUserDaoImpl_FindUsersByHobby(t *testing.T) {
 	t.Parallel()
@@ -349,11 +353,11 @@ func TestUserDaoImpl_FindUsersByHobby(t *testing.T) {
 }
 ```
 
-## Best Practices
+## 最佳实践
 
-Below best practices are from author's experience, only for reference.
+下面说的几点最佳实践只是作者总结的，仅供参考。
 
-- Design all table structures by database design tools like `Navicat` or `Mysql Workbench` at the beginning of development.
-- Then run `go-doudou ddl --reverse --dao` to generate initial code. Using `--reverse` flag when initialising projects only.
-- At the following project iteration, after modified domain structs in `domain` folder, you should delete `sql.go` suffixed files such as `userdaosql.go` at first, then run `go-doudou ddl --dao` to sync changes to table structures and generate `sql.go` suffixed files at the same time. If you also changed table name or table name prefix, you should also delete `daoimpl.go` suffixed files such as `userdaoimpl.go` and regenerate them.
-- Custom dao layer code must be written in new files, don't modify `base.go` file, `daoimpl.go` suffixed files and `daosql.go` suffixed files manually. In the whole project lifecycle, you must make sure that these files could be removed and regenerated at any time, but not produce bugs to the program.
+- 先通过`Navicat`或者`Mysql Workbench`之类的数据库设计工具整体设计表结构
+- 再通过命令`go-doudou ddl --reverse --dao`命令一把生成Go代码，`--reverse`参数仅在初始化项目时使用
+- 后续开发迭代过程中，修改`domain`文件夹的代码以后，须先将`dao`文件夹中的以`sql.go`为后缀的文件，如`userdaosql.go`删掉，再通过命令`go-doudou ddl --dao`将修改同步到数据库表结构，同时重新生成`sql.go`为后缀的文件。如果修改了表名称或者表前缀，则`dao`文件夹中的以`daoimpl.go`为后缀的文件，如`userdaoimpl.go`也需要删掉并重新生成。
+- 新增dao层代码一定要在新建的文件里编写，一定不要人工修改`dao`文件夹里的`base.go`、以`daoimpl.go`为后缀和以`daosql.go`为后缀的这三类文件的代码，在整个项目生命周期里这三类文件都必须是可以随时删除随时重新生成且不影响程序功能的

@@ -1,77 +1,76 @@
-# Getting Started
+# 快速开始
 
-## Prerequisites
+## 先决条件
 
-- only go1.17+
+- 只支持go1.16及以上
 
-## Install gRPC Compiler and Plugins
+## 安装gRPC编译器和插件
 
-### Install Compiler protoc
+### 安装编译器protoc
 
-To install the Protobuf compiler protoc, please refer to [official documentation](https://grpc.io/docs/protoc-installation/), here are the installation commands for common operating systems:
+安装Protobuf编译器protoc，可参考[官方文档](https://grpc.io/docs/protoc-installation/)，这里贴一下常见操作系统下的安装命令：
 
-- Ubuntu system:
+- Ubuntu系统:
 
 ```shell
 $ apt install -y protobuf-compiler
-$ protoc --version # Make sure to install v3 and above
-````
+$ protoc --version  # 确保安装v3及以上版本
+```
 
-- Mac system, you need to install [Homebrew](https://brew.sh/):
+- Mac系统，需要先安装[Homebrew](https://brew.sh/):
 
 ```shell
 $ brew install protobuf
-$ protoc --version # Make sure to install v3 and above
-````
+$ protoc --version  # 确保安装v3及以上版本
+```
 
-- If Homebrew fails to be installed on Windows systems or Mac systems, you need to download the installation package from github, unzip it, and configure the environment variables yourself.
-  The latest protoc download address for Windows system: [https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-win64.zip](https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-win64.zip)
-Mac system Intel latest protoc download address: [https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-osx-x86_64.zip](https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-osx-x86_64.zip)
-Please find other packages in [github releases](https://github.com/protocolbuffers/protobuf/releases).
+- Windows系统，或者Mac系统安装Homebrew失败，需从github下载安装包，解压后，自行配置环境变量。  
+  Windows系统最新protoc下载地址：[https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-win64.zip](https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-win64.zip)
+	Mac系统Intel最新protoc下载地址：[https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-osx-x86_64.zip](https://github.com/protocolbuffers/protobuf/releases/download/v21.7/protoc-21.7-osx-x86_64.zip)  
+	其他安装包请在 [github releases](https://github.com/protocolbuffers/protobuf/releases) 里找。
 
-### Install Plugins
+### 安装插件 
 
-1. Install the plugin:
+1. 安装插件:
 
 ```shell
 $ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 $ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
-````
+```
 
-2. Configure environment variables:
+2. 配置环境变量:
 
 ```shell
 $ export PATH="$PATH:$(go env GOPATH)/bin"
-````
+```
 
 ::: tip
-Please go to [https://grpc.io/docs/languages/go/quickstart/](https://grpc.io/docs/languages/go/quickstart/) to find the latest version number.
+最新版本号请跳转 [https://grpc.io/docs/languages/go/quickstart/](https://grpc.io/docs/languages/go/quickstart/) 查找。
 :::
 
-## Install go-doudou
-
-- If go version < 1.17,
+## 安装go-doudou
+- 如果Go版本低于1.17
 ```shell
-go get -v github.com/unionj-cloud/go-doudou@v1.3.3
+go get -v github.com/unionj-cloud/go-doudou/v2@v2.0.8
 ```
 
-- If go version >= 1.17, recommend to use below command to install go-doudou cli globally
+- 如果Go版本 >= 1.17，推荐采用如下命令全局安装`go-doudou`命令行工具
 ```shell
-go install -v github.com/unionj-cloud/go-doudou@v1.3.3
+go install -v github.com/unionj-cloud/go-doudou/v2@v2.0.8
 ```
-and use below command to download go-doudou as dependency for your module.
+推荐采用如下命令下载go-doudou作为项目的依赖
 ```shell
-go get -v -d github.com/unionj-cloud/go-doudou@v1.3.3
+go get -v -d github.com/unionj-cloud/go-doudou/v2@v2.0.8
 ```
 
 ::: tip
-If you meet 410 Gone error, try to run below command, then run install command again:
+如果遇到`410 Gone error`报错，请先执行如下命令，再执行上述的安装命令
 
 ```shell
 export GOSUMDB=off
 ``` 
 
-After installation, if you meet `go-doudou: command not found` error, please configure `$HOME/go/bin` to `~/.bash_profile` file, for example:
+安装完成后，如果遇到`go-doudou: command not found`报错，请将`$HOME/go/bin`配置到`~/.bash_profile`文件里，例如：
 
 ```shell
 # .bash_profile
@@ -91,51 +90,58 @@ export PATH
 
 :::
 
-## Upgrade
-You can run `go-doudou version` to upgrade cli.
+## 升级
+你可以执行命令`go-doudou version`来升级全局安装的`go-doudou`命令行工具
 ```shell
 ➜  ~ go-doudou version                       
 Installed version is v1.1.9
-Latest release version is v1.3.3
+Latest release version is v2.0.8
 ✔ Yes
-go install -v github.com/unionj-cloud/go-doudou@v1.3.3
-go: downloading github.com/unionj-cloud/go-doudou v1.3.3
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/columnenum
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/sortenum
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/nullenum
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/keyenum
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/extraenum
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/config
-github.com/unionj-cloud/go-doudou/toolkit/constants
-github.com/unionj-cloud/go-doudou/toolkit/stringutils
-github.com/unionj-cloud/go-doudou/toolkit/sliceutils
-github.com/unionj-cloud/go-doudou/toolkit/templateutils
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/wrapper
-github.com/unionj-cloud/go-doudou/toolkit/pathutils
-github.com/unionj-cloud/go-doudou/framework/internal/config
-github.com/unionj-cloud/go-doudou/copier
-github.com/unionj-cloud/go-doudou/executils
-github.com/unionj-cloud/go-doudou/cmd/internal/astutils
-github.com/unionj-cloud/go-doudou/logutils
-github.com/unionj-cloud/go-doudou/test
-github.com/unionj-cloud/go-doudou/name
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/ddlast
-github.com/unionj-cloud/go-doudou/openapi/v3
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/table
-github.com/unionj-cloud/go-doudou/openapi/v3/codegen/client
-github.com/unionj-cloud/go-doudou/framework/internal/codegen
-github.com/unionj-cloud/go-doudou/toolkit/sqlext/codegen
-github.com/unionj-cloud/go-doudou/ddl
-github.com/unionj-cloud/go-doudou/svc
-github.com/unionj-cloud/go-doudou/cmd
-github.com/unionj-cloud/go-doudou
+go install -v github.com/unionj-cloud/go-doudou/v2@v2.0.8
+go: downloading github.com/unionj-cloud/go-doudou/v2 v2.0.8
+github.com/unionj-cloud/go-doudou/v2/toolkit/constants
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/extraenum
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/keyenum
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/columnenum
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/config
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/nullenum
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/sortenum
+github.com/unionj-cloud/go-doudou/v2/version
+github.com/unionj-cloud/go-doudou/v2/toolkit/openapi/v3
+github.com/unionj-cloud/go-doudou/v2/toolkit/reflectutils
+github.com/unionj-cloud/go-doudou/v2/toolkit/stringutils
+github.com/unionj-cloud/go-doudou/v2/toolkit/caller
+github.com/unionj-cloud/go-doudou/v2/toolkit/pathutils
+github.com/unionj-cloud/go-doudou/v2/toolkit/sliceutils
+github.com/unionj-cloud/go-doudou/v2/toolkit/templateutils
+github.com/unionj-cloud/go-doudou/v2/toolkit/cast
+github.com/unionj-cloud/go-doudou/v2/toolkit/zlogger
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/executils
+github.com/unionj-cloud/go-doudou/v2/toolkit/copier
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/astutils
+github.com/unionj-cloud/go-doudou/v2/toolkit/dotenv
+github.com/unionj-cloud/go-doudou/v2/toolkit/yaml
+github.com/unionj-cloud/go-doudou/v2/toolkit/sqlext/logger
+github.com/unionj-cloud/go-doudou/v2/toolkit/sqlext/wrapper
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/ddlast
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/name
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/protobuf/v3
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/openapi/v3/codegen/client
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/openapi/v3
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/svc/codegen
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/table
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl/codegen
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/svc
+github.com/unionj-cloud/go-doudou/v2/cmd/internal/ddl
+github.com/unionj-cloud/go-doudou/v2/cmd
+github.com/unionj-cloud/go-doudou/v2
 DONE
 ➜  ~ go-doudou version
-Installed version is v1.3.3
+Installed version is v2.0.8
 ➜  ~ 
 ```  
 
-## Usage
+## 用法
 
 ```shell
 ➜  ~ go-doudou -h                                 
@@ -166,12 +172,12 @@ Use "go-doudou [command] --help" for more information about a command.
 
 ## Hello World
 
-### Initialize Project
-Run `svc init` command, you can use `-m` flag to specify module name.
+### 初始化项目
+执行 `go-doudou svc init` 命令，你可以设置`-m`参数，指定模块名称。
 ```shell
 go-doudou svc init helloworld -m github.com/unionj-cloud/helloworld
 ```
-It creates helloworld folder and some initial files.
+这行命令会生成`helloworld`文件夹和一些初始化文件。
 ```
 ➜  helloworld git:(master) ✗ tree -a 
 .
@@ -193,22 +199,21 @@ It creates helloworld folder and some initial files.
 
 8 directories, 7 files
 ```
-- Dockerfile：build docker image
+- `Dockerfile`：用于打包docker镜像
 
-- svc.go: design your RESTful apis by defining methods in `Helloworld` interface
+- `svc.go`: 在这个文件里的`Helloworld`接口里面定义方法，go-doudou通过你定义的方法生成对应的RESTful接口代码
 
-- vo folder：define structs as view objects and OpenAPI 3.0 schemas used in http request body and response body
+- `vo`包：里面定义`view object`结构体，用于请求体和响应体，可以手动创建多个go文件，`vo`包里定义的结构体都会作为`OpenAPI 3.0`的`schema`生成到json格式的接口文档中
 
-- .env: config file used to load `GDD_` prefixed environment variables
+- `.env`: 配置文件，里面的配置会被加载到环境变量里
 
-### Define API
+### 定义接口
 
-`svc.go` file is the idl file to describe your apis. Let's comment out the example api `PageUsers` and define our own like `Greeting`.  
-Please refer to [Define API](./idl.md) to learn more.
+`svc.go`文件相当于是接口定义文件，我们在`Helloworld`接口里定义方法就是在定义接口。我们现在注释掉默认生成的例子`PageUsers`方法，定义我们自己的一个接口`Greeting`。请参阅[Define API](./idl.md) 章节内容了解更多。
 
 ```go
 /**
-* Generated by go-doudou v1.3.3.
+* Generated by go-doudou v2.0.8.
 * You can edit it as your need.
  */
 package service
@@ -217,23 +222,20 @@ import (
 	"context"
 )
 
-//go:generate go-doudou svc http --handler -c --doc
+//go:generate go-doudou svc http -c
 //go:generate go-doudou svc grpc
 
 type Helloworld interface {
-	// You can define your service methods as your need. Below is an example.
-	// You can also add annotations here like @role(admin) to add meta data to routes for
-	// implementing your own middlewares
 	Greeting(ctx context.Context, greeting string) (data string, err error)
 }
 ```
 
-### Generate Code
+### 生成代码
+先执行如下命令
 ```shell
-go-doudou svc http --handler -c --doc
+go-doudou svc http -c
 ```
-then we should run `go mod tidy` to download dependencies.
-If you use go 1.17, you will see below instruction:
+然后再执行`go mod tidy`来下载依赖。如果你使用的Go版本是1.17，你可能会看到如下提示信息：
 ```
 To upgrade to the versions selected by go 1.16:
 	go mod tidy -go=1.16 && go mod tidy -go=1.17
@@ -242,8 +244,8 @@ If reproducibility with go 1.16 is not needed:
 For other options, see:
 	https://golang.org/doc/modules/pruning
 ```
-Then you should run `go mod tidy -go=1.16 && go mod tidy -go=1.17` or `go mod tidy -compat=1.17`.  
-Let's see what are generated.
+这时你需要执行命令`go mod tidy -go=1.16 && go mod tidy -go=1.17`或者`go mod tidy -compat=1.17`。
+让我们看看生成了什么。
 
 ```shell
 .
@@ -273,20 +275,20 @@ Let's see what are generated.
     └── vo.go
 ```
 
-- helloworld_openapi3.json: OpenAPI 3.0 spec json documentation
-- helloworld_openapi3.go: assign OpenAPI 3.0 spec json string to a variable for serving online
-- client folder: golang http client sdk based on [resty](https://github.com/go-resty/resty)
-- cmd folder: entry of the whole program
-- config folder: used for loading your custom business related configs
-- db folder: helper function for connecting to database
-- svcimpl.go: code your business logic here
-- transport folder: http routes and handlers
+- `helloworld_openapi3.json`: json格式的`OpenAPI 3.0`接口文档
+- `helloworld_openapi3.go`: 将`OpenAPI 3.0`接口文档的内容赋值给一个全局的变量用于在线浏览
+- `client`包: 基于[resty](https://github.com/go-resty/resty) 封装的Go语言http请求客户端代码
+- `cmd`包: 整个程序的入口
+- `config`包: 用于加载与业务相关的配置
+- `db`包: 连接数据库的工具代码
+- `svcimpl.go`: 在这个文件中实现接口，编写真实的业务逻辑代码
+- `transport`包: http网络层代码，主要负责解析入参和编码出参
 
-### Run
-Run `go-doudou svc run`
+### 启动服务
+执行命令`go-doudou svc run`
 ```shell
 ➜  helloworld git:(master) ✗ go-doudou svc run
-2022/10/04 20:16:34 maxprocs: Leaving GOMAXPROCS=16: CPU quota undefined
+2022/11/06 21:46:19 maxprocs: Leaving GOMAXPROCS=16: CPU quota undefined
                            _                    _
                           | |                  | |
   __ _   ___   ______   __| |  ___   _   _   __| |  ___   _   _
@@ -295,39 +297,37 @@ Run `go-doudou svc run`
  \__, | \___/          \__,_| \___/  \__,_| \__,_| \___/  \__,_|
   __/ |
  |___/
-2022-10-04 20:16:34 INF ================ Registered Routes ================
-2022-10-04 20:16:34 INF +----------------------+--------+-------------------------------+
-2022-10-04 20:16:34 INF |         NAME         | METHOD |            PATTERN            |
-2022-10-04 20:16:34 INF +----------------------+--------+-------------------------------+
-2022-10-04 20:16:34 INF | Greeting             | POST   | /greeting                     |
-2022-10-04 20:16:34 INF | GetDoc               | GET    | /go-doudou/doc                |
-2022-10-04 20:16:34 INF | GetOpenAPI           | GET    | /go-doudou/openapi.json       |
-2022-10-04 20:16:34 INF | Prometheus           | GET    | /go-doudou/prometheus         |
-2022-10-04 20:16:34 INF | GetRegistry          | GET    | /go-doudou/registry           |
-2022-10-04 20:16:34 INF | GetConfig            | GET    | /go-doudou/config             |
-2022-10-04 20:16:34 INF | GetStatsvizWs        | GET    | /go-doudou/statsviz/ws        |
-2022-10-04 20:16:34 INF | GetStatsviz          | GET    | /go-doudou/statsviz/*filepath |
-2022-10-04 20:16:34 INF | GetDebugPprofCmdline | GET    | /debug/pprof/cmdline          |
-2022-10-04 20:16:34 INF | GetDebugPprofProfile | GET    | /debug/pprof/profile          |
-2022-10-04 20:16:34 INF | GetDebugPprofSymbol  | GET    | /debug/pprof/symbol           |
-2022-10-04 20:16:34 INF | GetDebugPprofTrace   | GET    | /debug/pprof/trace            |
-2022-10-04 20:16:34 INF | GetDebugPprofIndex   | GET    | /debug/pprof/*filepath        |
-2022-10-04 20:16:34 INF +----------------------+--------+-------------------------------+
-2022-10-04 20:16:34 INF ===================================================
-2022-10-04 20:16:34 INF Http server is listening at :6060
-2022-10-04 20:16:34 INF Http server started in 1.323458ms
+2022-11-06 21:46:19 INF ================ Registered Routes ================
+2022-11-06 21:46:19 INF +----------------------+--------+-------------------------+
+2022-11-06 21:46:19 INF |         NAME         | METHOD |         PATTERN         |
+2022-11-06 21:46:19 INF +----------------------+--------+-------------------------+
+2022-11-06 21:46:19 INF | Greeting             | POST   | /greeting               |
+2022-11-06 21:46:19 INF | GetDoc               | GET    | /go-doudou/doc          |
+2022-11-06 21:46:19 INF | GetOpenAPI           | GET    | /go-doudou/openapi.json |
+2022-11-06 21:46:19 INF | Prometheus           | GET    | /go-doudou/prometheus   |
+2022-11-06 21:46:19 INF | GetConfig            | GET    | /go-doudou/config       |
+2022-11-06 21:46:19 INF | GetStatsvizWs        | GET    | /go-doudou/statsviz/ws  |
+2022-11-06 21:46:19 INF | GetStatsviz          | GET    | /go-doudou/statsviz/*   |
+2022-11-06 21:46:19 INF | GetDebugPprofCmdline | GET    | /debug/pprof/cmdline    |
+2022-11-06 21:46:19 INF | GetDebugPprofProfile | GET    | /debug/pprof/profile    |
+2022-11-06 21:46:19 INF | GetDebugPprofSymbol  | GET    | /debug/pprof/symbol     |
+2022-11-06 21:46:19 INF | GetDebugPprofTrace   | GET    | /debug/pprof/trace      |
+2022-11-06 21:46:19 INF | GetDebugPprofIndex   | GET    | /debug/pprof/*          |
+2022-11-06 21:46:19 INF +----------------------+--------+-------------------------+
+2022-11-06 21:46:19 INF ===================================================
+2022-11-06 21:46:19 INF Http server is listening at :6060
+2022-11-06 21:46:19 INF Http server started in 1.993608ms
 ```
 
 ### Postman
-Import helloworld_openapi3.json to postman to test `/greeting` api. You can see fake response returned.
+将`helloworld_openapi3.json`文件导入postman，测试`/greeting`接口。你可以看到返回了假数据。
 ![greeting](/images/greeting.png)
 
-### Implementation
-Now we are going to start implementing our business logic in `svcimpl.go` file.
-Let's what code already there.
+### 实现接口
+现在我们要在`svcimpl.go`文件里实现真实的业务逻辑了。让我们先来看一下现在的代码。
 ```go
 /**
-* Generated by go-doudou v1.3.3.
+* Generated by go-doudou v2.0.8.
 * You can edit it as your need.
  */
 package service
@@ -359,10 +359,10 @@ func NewHelloworld(conf *config.Config) *HelloworldImpl {
 	}
 }
 ```
-We use [gofakeit](github.com/brianvoe/gofakeit) to generate fake response as default implementation. Now we should get rid of it and start to code.
+我们采用[gofakeit](github.com/brianvoe/gofakeit) 这个库帮我们生成假数据。我们首先需要删掉这些代码。
 ```go
 /**
-* Generated by go-doudou v1.3.3.
+* Generated by go-doudou v2.0.8.
 * You can edit it as your need.
  */
 package service
@@ -390,43 +390,58 @@ func NewHelloworld(conf *config.Config) *HelloworldImpl {
 	}
 }
 ```
-We removed Line 21~25 and replaced with `return fmt.Sprintf("Hello %s", greeting), nil`. Then let's test it again.
+我们删掉了第21~25行的代码，替换成了`return fmt.Sprintf("Hello %s", greeting), nil`。我们再测一下效果。
 ![greeting1](/images/greeting1.png)
-You see, it's really very simple to write a RESTful service with go-doudou!
+用go-doudou写RESTful接口是不是非常简单！
 
-### gRPC service
+### gRPC服务
 
-Let's add the gRPC service to the project. gRPC is the most popular rpc framework in the go ecosystem. gRPC uses `http2` as the network protocol and `protobuf` as the message body serialization scheme. The general process of developing a gRPC service is probably the following steps:
+下面我们来给项目加上gRPC服务。gRPC是go生态中最流行的rpc框架。gRPC采用`http2`作为网络协议加`protobuf`作为消息体序列化方案。开发gRPC服务的一般流程大概是以下几步：
 
-1. First define `message` and `service` in the file with the `.proto` suffix according to the syntax of `protobuf`
-2. Execute something like `protoc --proto_path=. --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative transport/grpc/helloworld.proto` Command to generate server-side and client-side piling code
-3. Then define the structure and method yourself to implement an interface like `pb.HelloworldServiceServer`, so as to realize the business logic
-4. Finally in the `main` function add something like
+1. 先按照`protobuf`的语法在`.proto`后缀的文件里定义`message`和`service`
+2. 再执行类似`protoc --proto_path=. --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative transport/grpc/helloworld.proto`这样的命令生成服务端和客户端打桩代码
+3. 再自己定义结构体和方法实现类似`pb.HelloworldServiceServer`这样的接口，从而实现业务逻辑
+4. 最后在`main`函数里加上类似
 
-````go
+```go
 ...
 grpcServer := grpc.NewServer(opts...)
 pb.RegisterHelloworldServiceServer(grpcServer, svc)
 grpcServer.Serve(lis)
-````
+```
 
-Such code to start the gRPC service.
+这样的代码来启动gRPC服务。
 
-If you use `go-doudou` as the development framework to develop gRPC services, it will be much simpler. Taking the `Helloworld` project above as an example, it only takes two steps:
+如果采用`go-doudou`作为开发框架来开发gRPC服务的话，会简单很多。以上文的`Helloworld`项目为例，只需两步：
 
-#### Generate gRPC code
+#### 生成gRPC代码
 
-Execute the command `go-doudou svc grpc` in the project root path, this command directly generates files with `.proto` suffix, server and client piling code, and `pb in the `svcimpl.go` file. The implementation method of the HelloworldServiceServer` interface, just wait for us to implement the specific business logic in the generated method.
+在项目根路径下执行命令`go-doudou svc grpc`，该命令直接为我们生成了`.proto`后缀的文件，服务端和客户端打桩代码，以及`svcimpl.go`文件里的`pb.HelloworldServiceServer`接口的实现方法，只等我们在生成的方法里实现具体的业务逻辑即可。 
 
-The folder structure at this point is as follows:
+此时的文件夹结构如下：
 
 ```shell
-...
-├── main
+.
+├── Dockerfile
+├── client
+│   ├── client.go
+│   ├── clientproxy.go
+│   └── iclient.go
+├── cmd
+│   └── main.go
+├── config
+│   └── config.go
+├── db
+│   └── db.go
+├── go.mod
+├── go.sum
+├── helloworld_openapi3.go
+├── helloworld_openapi3.json
 ├── svc.go
 ├── svcimpl.go
 ├── transport
 │   ├── grpc
+│   │   ├── annotation.go
 │   │   ├── helloworld.pb.go
 │   │   ├── helloworld.proto
 │   │   └── helloworld_grpc.pb.go
@@ -438,7 +453,7 @@ The folder structure at this point is as follows:
     └── vo.go
 ```
 
-Let's look at the `svcimpl.go` file again, and you can see that there is an additional `GreetingRpc` method, so that the `HelloworldImpl` structure implements the `pb.HelloworldServiceServer` interface.
+我们再看一下`svcimpl.go`文件，可以看到多了一个`GreetingRpc`方法，从而使`HelloworldImpl`结构体实现了`pb.HelloworldServiceServer`接口。
 
 ```go
 func (receiver *HelloworldImpl) GreetingRpc(ctx context.Context, request *pb.GreetingRpcRequest) (*pb.GreetingRpcResponse, error) {
@@ -447,7 +462,7 @@ func (receiver *HelloworldImpl) GreetingRpc(ctx context.Context, request *pb.Gre
 }
 ```
 
-Here we can reuse the `Greeting` method used by RESTful services. The modified code is as follows:
+这里我们可以复用RESTful服务用到的`Greeting`方法，修改后的代码如下：
 
 ```go
 func (receiver *HelloworldImpl) GreetingRpc(ctx context.Context, request *pb.GreetingRpcRequest) (*pb.GreetingRpcResponse, error) {
@@ -461,9 +476,9 @@ func (receiver *HelloworldImpl) GreetingRpc(ctx context.Context, request *pb.Gre
 }
 ```
 
-#### Modify the main function
+#### 修改main函数
 
-Add the following code to the `main` function of the `main.go` file in the `cmd` folder:
+在`cmd`文件夹里的`main.go`文件的`main`函数里加入以下代码：
 
 ```go
 go func() {
@@ -490,11 +505,20 @@ go func() {
 	}()
 ```
 
-After modification, the complete `main.go` file code is as follows:
+然后在`go.mod`文件里加入以下依赖：
+
+```
+github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4
+github.com/grpc-ecosystem/go-grpc-middleware/providers/zerolog/v2 v2.0.0-rc.2
+github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.2
+github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
+```
+
+执行命令`go mod tidy`后，完整的`main.go`文件代码如下：
 
 ```go
 /**
-* Generated by go-doudou v1.3.3.
+* Generated by go-doudou v2.0.8.
 * You can edit it as your need.
  */
 package main
@@ -506,11 +530,10 @@ import (
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/tags"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	ddgrpc "github.com/unionj-cloud/go-doudou/framework/grpc"
-	ddhttp "github.com/unionj-cloud/go-doudou/framework/http"
-	logger "github.com/unionj-cloud/go-doudou/toolkit/zlogger"
+	"github.com/unionj-cloud/go-doudou/v2/framework/grpcx"
+	"github.com/unionj-cloud/go-doudou/v2/framework/rest"
+	"github.com/unionj-cloud/go-doudou/v2/toolkit/zlogger"
 	service "github.com/unionj-cloud/helloworld"
 	"github.com/unionj-cloud/helloworld/config"
 	pb "github.com/unionj-cloud/helloworld/transport/grpc"
@@ -523,21 +546,19 @@ func main() {
 	svc := service.NewHelloworld(conf)
 
 	go func() {
-		grpcServer := ddgrpc.NewGrpcServer(
+		grpcServer := grpcx.NewGrpcServer(
 			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 				grpc_ctxtags.StreamServerInterceptor(),
 				grpc_opentracing.StreamServerInterceptor(),
 				grpc_prometheus.StreamServerInterceptor,
-				tags.StreamServerInterceptor(tags.WithFieldExtractor(tags.CodeGenRequestFieldExtractor)),
-				logging.StreamServerInterceptor(grpczerolog.InterceptorLogger(logger.Logger)),
+				logging.StreamServerInterceptor(grpczerolog.InterceptorLogger(zlogger.Logger)),
 				grpc_recovery.StreamServerInterceptor(),
 			)),
 			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 				grpc_ctxtags.UnaryServerInterceptor(),
 				grpc_opentracing.UnaryServerInterceptor(),
 				grpc_prometheus.UnaryServerInterceptor,
-				tags.UnaryServerInterceptor(tags.WithFieldExtractor(tags.CodeGenRequestFieldExtractor)),
-				logging.UnaryServerInterceptor(grpczerolog.InterceptorLogger(logger.Logger)),
+				logging.UnaryServerInterceptor(grpczerolog.InterceptorLogger(zlogger.Logger)),
 				grpc_recovery.UnaryServerInterceptor(),
 			)),
 		)
@@ -546,17 +567,17 @@ func main() {
 	}()
 
 	handler := httpsrv.NewHelloworldHandler(svc)
-	srv := ddhttp.NewHttpRouterSrv()
+	srv := rest.NewRestServer()
 	srv.AddRoute(httpsrv.Routes(handler)...)
 	srv.Run()
 }
 ```
 
-After executing the command `go mod tidy`, let's restart the service and take a look.
+我们重启服务看一下。
 
 ```shell
 ➜  helloworld git:(master) ✗ go-doudou svc run
-2022/10/04 20:52:40 maxprocs: Leaving GOMAXPROCS=16: CPU quota undefined
+2022/11/06 22:01:24 maxprocs: Leaving GOMAXPROCS=16: CPU quota undefined
                            _                    _
                           | |                  | |
   __ _   ___   ______   __| |  ___   _   _   __| |  ___   _   _
@@ -565,55 +586,54 @@ After executing the command `go mod tidy`, let's restart the service and take a 
  \__, | \___/          \__,_| \___/  \__,_| \__,_| \___/  \__,_|
   __/ |
  |___/
-2022-10-04 20:52:40 INF ================ Registered Routes ================
-2022-10-04 20:52:40 INF +----------------------+--------+-------------------------------+
-2022-10-04 20:52:40 INF |         NAME         | METHOD |            PATTERN            |
-2022-10-04 20:52:40 INF +----------------------+--------+-------------------------------+
-2022-10-04 20:52:40 INF | Greeting             | POST   | /greeting                     |
-2022-10-04 20:52:40 INF | GetDoc               | GET    | /go-doudou/doc                |
-2022-10-04 20:52:40 INF | GetOpenAPI           | GET    | /go-doudou/openapi.json       |
-2022-10-04 20:52:40 INF | Prometheus           | GET    | /go-doudou/prometheus         |
-2022-10-04 20:52:40 INF ================ Registered Services ================
-2022-10-04 20:52:40 INF | GetRegistry          | GET    | /go-doudou/registry           |
-2022-10-04 20:52:40 INF | GetConfig            | GET    | /go-doudou/config             |
-2022-10-04 20:52:40 INF | GetStatsvizWs        | GET    | /go-doudou/statsviz/ws        |
-2022-10-04 20:52:40 INF | GetStatsviz          | GET    | /go-doudou/statsviz/*filepath |
-2022-10-04 20:52:40 INF | GetDebugPprofCmdline | GET    | /debug/pprof/cmdline          |
-2022-10-04 20:52:40 INF | GetDebugPprofProfile | GET    | /debug/pprof/profile          |
-2022-10-04 20:52:40 INF +------------------------------------------+----------------------+
-2022-10-04 20:52:40 INF |                 SERVICE                  |         RPC          |
-2022-10-04 20:52:40 INF | GetDebugPprofSymbol  | GET    | /debug/pprof/symbol           |
-2022-10-04 20:52:40 INF +------------------------------------------+----------------------+
-2022-10-04 20:52:40 INF | GetDebugPprofTrace   | GET    | /debug/pprof/trace            |
-2022-10-04 20:52:40 INF | GetDebugPprofIndex   | GET    | /debug/pprof/*filepath        |
-2022-10-04 20:52:40 INF | helloworld.HelloworldService             | GreetingRpc          |
-2022-10-04 20:52:40 INF +----------------------+--------+-------------------------------+
-2022-10-04 20:52:40 INF | grpc.reflection.v1alpha.ServerReflection | ServerReflectionInfo |
-2022-10-04 20:52:40 INF ===================================================
-2022-10-04 20:52:40 INF +------------------------------------------+----------------------+
-2022-10-04 20:52:40 INF ===================================================
-2022-10-04 20:52:40 INF Http server is listening at :6060
-2022-10-04 20:52:40 INF Http server started in 2.085978ms
-2022-10-04 20:52:40 INF Grpc server is listening at [::]:50051
-2022-10-04 20:52:40 INF Grpc server started in 8.11024ms
+2022-11-06 22:01:24 INF ================ Registered Routes ================
+2022-11-06 22:01:24 INF ================ Registered Services ================
+2022-11-06 22:01:24 INF +------------------------------------------+----------------------+
+2022-11-06 22:01:24 INF |                 SERVICE                  |         RPC          |
+2022-11-06 22:01:24 INF +------------------------------------------+----------------------+
+2022-11-06 22:01:24 INF | helloworld.HelloworldService             | GreetingRpc          |
+2022-11-06 22:01:24 INF | grpc.reflection.v1alpha.ServerReflection | ServerReflectionInfo |
+2022-11-06 22:01:24 INF +------------------------------------------+----------------------+
+2022-11-06 22:01:24 INF ===================================================
+2022-11-06 22:01:24 INF Grpc server is listening at [::]:50051
+2022-11-06 22:01:24 INF Grpc server started in 5.905894ms
+2022-11-06 22:01:24 INF +----------------------+--------+-------------------------+
+2022-11-06 22:01:24 INF |         NAME         | METHOD |         PATTERN         |
+2022-11-06 22:01:24 INF +----------------------+--------+-------------------------+
+2022-11-06 22:01:24 INF | Greeting             | POST   | /greeting               |
+2022-11-06 22:01:24 INF | GetDoc               | GET    | /go-doudou/doc          |
+2022-11-06 22:01:24 INF | GetOpenAPI           | GET    | /go-doudou/openapi.json |
+2022-11-06 22:01:24 INF | Prometheus           | GET    | /go-doudou/prometheus   |
+2022-11-06 22:01:24 INF | GetConfig            | GET    | /go-doudou/config       |
+2022-11-06 22:01:24 INF | GetStatsvizWs        | GET    | /go-doudou/statsviz/ws  |
+2022-11-06 22:01:24 INF | GetStatsviz          | GET    | /go-doudou/statsviz/*   |
+2022-11-06 22:01:24 INF | GetDebugPprofCmdline | GET    | /debug/pprof/cmdline    |
+2022-11-06 22:01:24 INF | GetDebugPprofProfile | GET    | /debug/pprof/profile    |
+2022-11-06 22:01:24 INF | GetDebugPprofSymbol  | GET    | /debug/pprof/symbol     |
+2022-11-06 22:01:24 INF | GetDebugPprofTrace   | GET    | /debug/pprof/trace      |
+2022-11-06 22:01:24 INF | GetDebugPprofIndex   | GET    | /debug/pprof/*          |
+2022-11-06 22:01:24 INF +----------------------+--------+-------------------------+
+2022-11-06 22:01:24 INF ===================================================
+2022-11-06 22:01:24 INF Http server is listening at :6060
+2022-11-06 22:01:24 INF Http server started in 1.450698ms
 ```
 
-The log output is a bit messy because the gRPC service and the RESTful service are running in separate goroutines. The log output will be clearer if only the gRPC service is started.
+日志输出有点乱，是因为gRPC服务和RESTful服务分别在不同的goroutine中运行。如果只启动gRPC服务的话，日志输出会更清晰。  
 
-When we see `Grpc server is listening at [::]:50051`, the gRPC service is successfully started.
+当我们看到`Grpc server is listening at [::]:50051`就说明gRPC服务启动成功了。
 
-### Test gRPC
+### 测试gRPC
 
-You can test gRPC services with postman, but I won't go into details here.
+可以用postman测试gRPC服务，但这里不打算详细介绍了。
 
 ![postmangrpc](/images/postmangrpc.jpeg)
 
-Here we use the well-known gRPC client tool `evans` to test. For details, please jump to [https://github.com/ktr0731/evans](https://github.com/ktr0731/evans).
+这里采用知名gRPC客户端工具`evans`来测试。详细介绍请跳转[https://github.com/ktr0731/evans](https://github.com/ktr0731/evans)。
 
-Please read the comments in the code for usage.
+请阅读代码中的注释说明，了解用法。
 
 ```shell
-# 50051 is the default port number that grpc server listens to
+# 50051是grpc server监听的默认端口号
 ➜  helloworld git:(master) ✗ evans -r repl -p 50051
 
   ______
@@ -625,7 +645,7 @@ Please read the comments in the code for usage.
 
  more expressive universal gRPC client
 
-# View which services and rpc interfaces are provided by grpc server
+# 查看grpc server提供了哪些服务和rpc接口
 helloworld.HelloworldService@127.0.0.1:50051> show service
 +-------------------+-------------+--------------------+---------------------+
 |      SERVICE      |     RPC     |    REQUEST TYPE    |    RESPONSE TYPE    |
@@ -633,35 +653,34 @@ helloworld.HelloworldService@127.0.0.1:50051> show service
 | HelloworldService | GreetingRpc | GreetingRpcRequest | GreetingRpcResponse |
 +-------------------+-------------+--------------------+---------------------+
 
-# Switch to the HelloworldService service, so that after the call command, you can directly enter the rpc name
+# 切换到HelloworldService服务下，之后的call命令后面可以直接输入rpc名称了
 helloworld.HelloworldService@127.0.0.1:50051> service HelloworldService
 
-# Call the GreetingRpc interface, open the interactive terminal, 
-# input parameters according to the prompt, and output the return value
+# 调用GreetingRpc接口，开启交互式终端，根据提示输入参数，输出返回值
 helloworld.HelloworldService@127.0.0.1:50051> call GreetingRpc
 greeting (TYPE_STRING) => Jack
 {
   "data": "Hello Jack"
 }
 
-# Exit evans
+# 退出evans
 helloworld.HelloworldService@127.0.0.1:50051> exit
 Good Bye :)
 ```
 
-After we input "Jack", we output "Hello Jack", which proves that the gRPC service can run.
+我们输入"Jack"后，输出了"Hello Jack"，证明gRPC服务可以跑通。
 
-We can see that a line of log is also output in the tab of the command line terminal where the gRPC service is located:
+我们可以看到gRPC服务所在的命令行终端的标签页中也输出了一行日志：
 
 ```shell
-2022-10-04 21:31:03 INF finished server unary call grpc.code=OK grpc.method=GreetingRpc grpc.method_type=unary grpc.service=helloworld.HelloworldService grpc.start_time=2022-10-04T21:31:03+08:00 grpc.time_ms=0.031 kind=server peer.address=127.0.0.1:53737 system=grpc
+2022-11-06 22:02:54 INF finished server unary call grpc.code=OK grpc.method=GreetingRpc grpc.method_type=unary grpc.service=helloworld.HelloworldService grpc.start_time=2022-11-06T22:02:54+08:00 grpc.time_ms=0.026 kind=server system=grpc
 ```
 
-### Deployment
-There are a lot of approaches to deploy go http server. We'd like to use kubernetes to deploy our projects.
-Please refer to [Deployment](./deployment.md) to learn more.
-#### Build Docker Image
-Run `go-doudou svc push -r wubin1989`, don't forget change `wubin1989` to your remote docker image reposiotry.
+### K8S部署
+有很多种部署go语言的http服务的方案。我们这里将`helloworld`服务部署到k8s上。请参考[Deployment](./deployment.md) 章节来了解更多。
+#### 构建docker镜像
+执行命令`go-doudou svc push -r wubin1989`，别忘记将`wubin1989`改成你自己的远程镜像仓库。
+
 ```shell
 ...
 v20221004215355: digest: sha256:31d4242cc6d27990e7cf562c285bd164c10914bceddc6a23068a52aa43c217be size: 1360
@@ -669,42 +688,41 @@ INFO[2022-10-04 22:01:37] image wubin1989/helloworld:v20221004215355 has been pu
 INFO[2022-10-04 22:01:37] k8s yaml has been created/updated successfully. execute command 'go-doudou svc deploy' to deploy service helloworld to k8s cluster 
 ```
 
-Then you should see there are two yaml files generated: `helloworld_deployment.yaml` and `helloworld_statefulset.yaml`
+当输出最后三行内容，即表示镜像已经成功打包并推到了远程仓库，同时你可以看到多了两个yaml格式的文件：`helloworld_deployment.yaml`和`helloworld_statefulset.yaml`
 
-- `helloworld_deployment.yaml`: k8s deploy file for stateless service
-- `helloworld_statefulset.yaml`: k8s deploy file for stateful service  
+- `helloworld_deployment.yaml`: 用于部署无状态的服务
+- `helloworld_statefulset.yaml`: 用于部署有状态的服务
 
-#### Deploy
+#### 部署
 ::: tip
-If you haven't installed Docker Desktop, please download and install it from [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop).  
-If you are not familiar with docker and kubernetes, please refer to [official documentation](https://docs.docker.com/get-started/overview/) to learn more.
+如果你还没有安装Docker for Desktop，请从[https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) 下载安装。如果你对docker和k8s不了解，请参考[官方文档](https://docs.docker.com/get-started/overview/)。
 ::: 
-By default, `go-doudou svc deploy` command uses `helloworld_statefulset.yaml` to deploy the service as statefulset application.  
+当执行命令`go-doudou svc deploy`时，默认采用`helloworld_statefulset.yaml`文件来部署有状态的应用。
 ```shell
 go-doudou svc deploy
 ```
 
-Stateless services can also be deployed by adding the `-k` option followed by the file path:
+也可以通过加`-k`选项，后面跟文件路径，部署无状态服务：
 
 ```shell
 go-doudou svc deploy -k helloworld_deployment.yaml
 ```
 
-Then run `kubectl get pods` and you should see our service is running.
+然后执行命令`kubectl get pods`，可以看到我们的服务已经在运行了。
 ```shell
 ➜  helloworld git:(master) ✗ kubectl get pods    
 NAME                       READY   STATUS    RESTARTS   AGE
 helloworld-statefulset-0   1/1     Running   0          11m
 ```
-At the moment, you can't connect to our service via `http://localhost:6060`. You should setup proxy by running below commands:
+此时，你还不能通过`http://localhost:6060`访问服务。需要先配置一个端口转发。
 ```shell
 export POD_NAME=$(kubectl get pods --namespace default -l "app=helloworld" -o jsonpath="{.items[0].metadata.name}")
 ```
-and 
+然后
 ```shell
 kubectl port-forward --namespace default $POD_NAME 6060:6060 
 ```
-If you see below output from command line, you can test by postman now.
+如果你看到命令行终端有如下内容输出，就可以用postman测试接口了。
 ```shell
 ➜  helloworld git:(master) ✗ export POD_NAME=$(kubectl get pods --namespace default -l "app=helloworld" -o jsonpath="{.items[0].metadata.name}")
 ➜  helloworld git:(master) ✗ kubectl port-forward --namespace default $POD_NAME 6060:6060                                               
@@ -712,12 +730,12 @@ Forwarding from 127.0.0.1:6060 -> 6060
 Forwarding from [::1]:6060 -> 6060
 ```
 
-#### Shutdown
-Run `go-doudou svc shutdown` to stop the service.
+#### 关闭服务
+执行命令`go-doudou svc shutdown`可以关闭服务
 ```shell
 go-doudou svc shutdown
 ```  
-Then run `kubectl get pods` again, you should see below output.
+再次执行命令`kubectl get pods`，可以看到服务已经下线。
 ```shell
 ➜  helloworld git:(master) ✗ kubectl get pods                                                                                             
 No resources found in default namespace.

@@ -7,10 +7,6 @@ export const en: NavbarConfig = [
     link: '/guide/',
   },
   {
-    text: 'ORM',
-    link: '/orm/',
-  },
-  {
     text: 'Resources',
     link: '/resources/',
   },
@@ -30,9 +26,5 @@ export const en: NavbarConfig = [
         link: 'https://github.com/unionj-cloud/go-doudou/releases',
       },
     ],
-  },
-  {
-    text: `中文`,
-    link: 'https://go-doudou.unionj.cloud',
   },
 ]

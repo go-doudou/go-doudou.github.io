@@ -1,8 +1,8 @@
-# SQL Query Builder
+# Sql语句构造器
 
-Some of generated dao layer code accept parameters whose type implementing `query.Q` interface, you should use built-in sql query builder which only supports building single table crud sql. `Col` method only accepts column name of table, does not accept field name of go structs.
+ddl工具生成的dao层代码里有些方法需要传入`query.Q`类型的参数，需要使用内置的sql语句构造器。`Col`方法参数只能传入数据库中的字段名，不能传代码中的结构体属性名。其他很多开源orm同时支持传字段名和属性名，但是go-doudou作者认为容易出错，所以只支持数据库字段名。仅支持单表CRUD语句的构建。
 
-Examples: 
+以下是示例代码。
 
 ```go
 func ExampleCriteria() {

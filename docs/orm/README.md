@@ -1,4 +1,4 @@
-# Introduction
+# 介绍
 
-go-doudou provides a built-in lightweight orm based on [jmoiron/sqlx](https://github.com/jmoiron/sqlx), made up of two parts: one is table structure migration and dao layer code generation tool `go-doudou ddl`, another is sql log printing and cache module built upon `*sqlx.DB`. Only support `mysql` now, any pull requests are welcome!
+go-doudou内置的轻量级orm是基于[jmoiron/sqlx](https://github.com/jmoiron/sqlx)封装的，主要包括两个部分：一个是表结构同步和Dao层代码生成器`go-doudou ddl`，一个是底层封装了`*sqlx.DB`的开箱即用的sql查询日志输出模块和cache模块。目前仅支持`mysql`。
 

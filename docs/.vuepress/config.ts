@@ -17,16 +17,29 @@ export default defineUserConfig<DefaultThemeOptions>({
       href: `/favicon.ico`,
     },
   ],
-  ['meta', { name: 'keywords', content: 'microservice,service discovery,load balancing,circuit breaker,rate limit' }],
-  ['meta', { name: 'description', content: 'go-doudou is a golang microservice framework. It supports monolith service application as well. Starts from golang interface, no need to learn new IDL(interface definition language). Built-in SWIM gossip protocol based service register and discovery mechanism to help you build a robust, scalable and decentralized service cluster. Powerful code generator cli built-in. After defining your interface methods, your only job is implementing your awesome idea. Built-in service governance support including client-side load balancer, rate limiter, circuit breaker, bulkhead, timeout, retry and more.' }]
+  [
+    "script",
+    {},
+    `
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?658d535852e4dcdd8f3934c1c3e87165";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    `
+  ],
+  ['meta', { name: 'keywords', content: 'go-doudou,Go语言微服务框架,golang,go-doudou微服务框架,RESTful,微服务,服务注册与发现,负载均衡,熔断限流,grpc,去中心化,golang microservice framework,golang orm,ORM工具,microservice,service discovery,load balancing,circuit breaker,rate limit,低代码平台' }],
+  ['meta', { name: 'description', content: 'go-doudou是一个go语言微服务框架。它同时支持开发单体应用。从定义Go语言接口开始，无须学习任何接口描述语言。内置基于SWIM gossip协议的服务注册与发现的机制，帮助你构建一个健壮的、可扩展的、去中心化的微服务集群。内置强大的代码生成器。' }]
 ],
 
   locales: {
     "/": {
-      lang: "en-US",
+      lang: "zh-CN",
       title: "go-doudou",
-      description: "Golang Microservice Framework(REST/gRPC)",
-    }
+      description: "Go语言微服务框架(REST/gRPC)",
+    },
   },
 
   themeConfig: {
@@ -34,59 +47,39 @@ export default defineUserConfig<DefaultThemeOptions>({
     logo: "/logo.png",
     // theme-level locales config
     locales: {
-      /**
-       * English locale config
-       *
-       * As the default locale of @vuepress/theme-default is English,
-       * we don't need to set all of the locale fields
-       */
       '/': {
-        // navbar
-        navbar: navbar.en,
-
-        // sidebar
-        sidebar: sidebar.en,
-
-        // page meta
-        editLinkText: 'Edit this page on GitHub',
-      },
-
-      /**
-       * Chinese locale config
-       */
-      '/zh/': {
-        // navbar
-        navbar: navbar.zh,
-        selectLanguageName: '简体中文',
-        selectLanguageText: '选择语言',
-        selectLanguageAriaLabel: '选择语言',
-
-        // sidebar
-        sidebar: sidebar.zh,
-
-        // page meta
-        editLinkText: '在 GitHub 上编辑此页',
-        lastUpdatedText: '上次更新',
-        contributorsText: '贡献者',
-
-        // custom containers
-        tip: '提示',
-        warning: '注意',
-        danger: '警告',
-
-        // 404 page
-        notFound: [
-          '这里什么都没有',
-          '我们怎么到这来了？',
-          '这是一个 404 页面',
-          '看起来我们进入了错误的链接',
-        ],
-        backToHome: '返回首页',
-
-        // a11y
-        openInNewWindow: '在新窗口打开',
-        toggleDarkMode: '切换夜间模式',
-        toggleSidebar: '切换侧边栏',
+         // navbar
+         navbar: navbar.zh,
+         selectLanguageName: '简体中文',
+         selectLanguageText: '选择语言',
+         selectLanguageAriaLabel: '选择语言',
+ 
+         // sidebar
+         sidebar: sidebar.zh,
+ 
+         // page meta
+         editLinkText: '在 GitHub 上编辑此页',
+         lastUpdatedText: '上次更新',
+         contributorsText: '贡献者',
+ 
+         // custom containers
+         tip: '提示',
+         warning: '注意',
+         danger: '警告',
+ 
+         // 404 page
+         notFound: [
+           '这里什么都没有',
+           '我们怎么到这来了？',
+           '这是一个 404 页面',
+           '看起来我们进入了错误的链接',
+         ],
+         backToHome: '返回首页',
+ 
+         // a11y
+         openInNewWindow: '在新窗口打开',
+         toggleDarkMode: '切换夜间模式',
+         toggleSidebar: '切换侧边栏',
       },
     },
 

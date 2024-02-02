@@ -1,36 +1,35 @@
-# Define API
+# 接口定义
 
-`go-doudou` uses golang interface as IDL to let users define APIs.
+`go-doudou`没有重新造轮子，直接采用Go语言接口类型来做为接口描述语言IDL。用户可以在Go语言接口类型里定义方法，来让go-doudou生成对应的接口代码。
 
-## Benefits
-- For go-doudou users, have a flattened learning curve.
-- For go-doudou developers, no need to develop new DSL and IDE plugins, which saves a lot of work.
+## 优势
+- 对go-doudou的用户来说，易学易上手
+- 对go-doudou开发者来说，Go语言编译器可以帮我们做语法检查，IDE可以为我们提供语法高亮，省去了开发IDL和IDE插件的工作量
 
-## Limitations
-There are some limitations when you define methods as exposed API for client in svc.go file.
+## 劣势或限制
+用接口方法作为接口描述语言存在一些局限性。
 
-1. Only support `GET`, `POST`, `PUT`, `DELETE` http methods. You can specify http method by prefixing method name with one of `Get`/`Post`/`Put`/`Delete`. 
-If you don't specify, default is `POST`.
-2. First input parameter MUST be `context.Context`.
-3. Only support most of golang [built-in types](https://golang.org/pkg/builtin/), map with string key, custom structs in vo
-   package, corresponding slice and pointer types for input and output parameters. When generate code and
-   OpenAPI 3.0 spec, it will scan structs in vo package only. The structs placed in other than vo package will not be known by go-doudou.
-4. As a special case, it supports `v3.FileModel` for uploading files as input parameter and `*os.File` for downloading files as output parameter.
-5. NOT support alias types as field of struct.
-6. NOT support func, channel and anonymous struct type as input and output parameter.
-7. Only request parameter `required` validation feature built-in, no struct field validation. `go-doudou` treats pointer type as optional, non-pointer type as required. 
-8. As for OpenAPI 3.0 documentation
-	- Not support documenting request headers and response headers, global parameters and authentication. You can write down these information 
-as golang comments immediately above service interface or corresponding methods in `svc.go` file, and these comments will be set to each `description` attribute in generated OpenAPI 3.0 json file and also be displayed in online api documentation.
-	- Not support [Tag Object](https://spec.openapis.org/oas/v3.0.3#tag-object), [Callback Object](https://spec.openapis.org/oas/v3.0.3#callback-object), [Discriminator Object](https://spec.openapis.org/oas/v3.0.3#discriminator-object), [XML Object](https://spec.openapis.org/oas/v3.0.3#xml-object), [Security Scheme Object](https://spec.openapis.org/oas/v3.0.3#security-scheme-object), [OAuth Flows Object](https://spec.openapis.org/oas/v3.0.3#oauth-flows-object), [OAuth Flow Object](https://spec.openapis.org/oas/v3.0.3#oauth-flow-object), [Security Requirement Object ](https://spec.openapis.org/oas/v3.0.3#security-requirement-object). You may not need them, but I should mention here.
+1. 仅支持生成`GET`, `POST`, `PUT`, `DELETE`接口。默认是`POST`接口。你可以给方法名加上`Get`/`Post`/`Put`/`Delete`前缀，指定接口的http请求方法。
+2. 方法签名第一个入参必须是`context.Context`。
+3. 方法签名中的入参和出参仅支持绝大多数常见的Go语言[内建类型](https://golang.org/pkg/builtin/)，字符串作为键的字典类型，`vo`包中的自定义结构体类型，以及相对应的切片和指针类型。
+   当生成代码和`OpenAPI 3.0`的接口文档的时候，go-doudou只会扫描`vo`包中的结构体。如果方法签名中出现了在`vo`包之外定义的结构体类型，go-doudou是不知道它里面有哪些字段的。
+4. 作为特例，你可以用`v3.FileModel`类型作为入参来上传文件，用`*os.File`类型作为出参来下载文件。
+5. 不支持别名类型作为结构体的字段。
+6. 不支持函数类型、通道类型和匿名结构体类型作为方法签名的入参和出参。
+7. `go-doudou`将指针类型的入参视为非必传，非指针类型的入参都视为必传。
+8. 对于`OpenAPI 3.0`的接口文档生成：
+	- 不支持请求头和响应头，全局参数以及权限校验。你可以把这些内容作为Go语言注释，写在接口声明的上方或者接口方法签名的上方，这些注释会作为`description`的值生成到接口文档里，然后显示在在线接口文档页面的相应位置。
+	- 不支持[Tag Object](https://spec.openapis.org/oas/v3.0.3#tag-object), [Callback Object](https://spec.openapis.org/oas/v3.0.3#callback-object), [Discriminator Object](https://spec.openapis.org/oas/v3.0.3#discriminator-object), [XML Object](https://spec.openapis.org/oas/v3.0.3#xml-object), [Security Scheme Object](https://spec.openapis.org/oas/v3.0.3#security-scheme-object), [OAuth Flows Object](https://spec.openapis.org/oas/v3.0.3#oauth-flows-object), [OAuth Flow Object](https://spec.openapis.org/oas/v3.0.3#oauth-flow-object), [Security Requirement Object ](https://spec.openapis.org/oas/v3.0.3#security-requirement-object). 你可能并不会用到这些API，但我需要在这里提一下。
+9. 对于Protobuf，暂时不支持 `oneof` 。
+10. 定义stream类型的入参和出参时，参数名称必须以`stream`作为前缀，例如：`stream1`，`stream2`，`streamReq`，`streamResp`等等都可以。
 
-## Enum
+## 枚举
 
-go-doudou supports enum type since v1.0.5
+go-doudou 从v1.0.5起新增对枚举的支持。
 
-### How
+### 定义方法
 
-1. Define an alias type of any golang basic type as enum type, and implement `IEnum` interface from `github.com/unionj-cloud/go-doudou/toolkit/openapi/v3` package
+1. 在`vo`包里定义一个基础类型的别名类型作为枚举类型，并且实现`github.com/unionj-cloud/go-doudou/v2/toolkit/openapi/v3`包里的`IEnum`接口
 
 ```go
 type IEnum interface {
@@ -41,11 +40,11 @@ type IEnum interface {
 }
 ```
 
-2. Define several const variables of this enum type
+2. 定义若干该枚举类型的常量
 
-### Example
+### 示例代码
 
-Please visit [go-doudou-tutorials/enumdemo](https://github.com/unionj-cloud/go-doudou-tutorials/tree/master/enumdemo) to see full demo source code.
+完整的demo代码，请移步 [go-doudou-tutorials/enumdemo](https://github.com/unionj-cloud/go-doudou-tutorials/tree/master/enumdemo)
 
 ```go
 package vo
@@ -113,36 +112,43 @@ type Keyboard struct {
 }
 ```
 
-## Annotation
+## 注解
 
-go-doudou begins supporting annotation from v1.1.7.
+go-doudou 从v1.1.7起新增对注解的支持。
 
-Developers can add go-doudou annotation carrying meta data about a rest api in go doc in order to easily implement own business logic in custom middlewares like 
-authentication, authority, permission etc.
+开发者可以在接口方法定义上方的go语言文档注释中添加自定义的注解来给接口添加元数据，方便在编写自定义中间件的时候读取这些数据实现统一的业务处理。
 
-### Grammer
+### 定义方法
 
-Definition format：`@annotationName(parameter1,parameter2,parameter3...)`
+定义格式：`@注解名称(参数1,参数2,参数3...)`。
 
-Definition rule:
-1. Annotation can be written anywhere in go doc, they can be in the middle of any text content, no need any whitespaces.
-2. Annotation name must start with symbol `@`, there shouldn't be any whitespaces in it.
-3. Parameters between `()` will be parsed as string slice, split by comma `,`, there can be no parameter, but `()` can not be omit.
+定义规则：
+1. 注解可以写在go语言文档注释中的任意位置，前后都可以有其他文字说明，且无需空格
+2. 注解必须以`@`符号开头，注解名称中不能有空白字符
+3. 英文括号`()`里的内容会解析成字符串切片类型的参数，多个参数以英文逗号`,`分隔，可以不定义任何参数，但是英文括号不能省
 
-Example: `@role(admin)`、`@permission(create,update,del)`、`@inner()`
+示例：`@role(admin)`、`@permission(create,update,del)`、`@inner()`
 
-### Code Generation
+### 生成代码
 
-go-doudou will generate package level `github.com/unionj-cloud/go-doudou/framework/http/model.AnnotationStore` type instance `RouteAnnotationStore` by parsing annotations. 
-Developers can read annotation data from `httpsrv.RouteAnnotationStore` to implement their own business logic.
+go-doudou 通过解析开发者定义的注解，在`transport/httpsrv/handler.go`文件中生成`github.com/unionj-cloud/go-doudou/v2/framework.AnnotationStore`类型的包级别的实例`RouteAnnotationStore`。开发者可以在middleware里通过`httpsrv.RouteAnnotationStore`读取注解，实现自定义的业务逻辑。
 
-Below is an example for generated code;
+以下是生成代码的示例代码：
 
 ```go
-// AnnotationStore is alias of map[string][]Annotation
-// key is mux route name
-var RouteAnnotationStore = ddmodel.AnnotationStore{
-	"ProtectApi": {
+// AnnotationStore类型实际是map[string][]Annotation的别名
+// key是路由名称
+var RouteAnnotationStore = framework.AnnotationStore{
+	"GetUser": {
+		{
+			Name: "@role",
+			Params: []string{
+				"USER",
+				"ADMIN",
+			},
+		},
+	},
+	"GetAdmin": {
 		{
 			Name: "@role",
 			Params: []string{
@@ -153,22 +159,61 @@ var RouteAnnotationStore = ddmodel.AnnotationStore{
 }
 ```
 
-### Usage
+如果是开发gRPC服务，则会在`transport/grpc/annotation.go`文件中生成`github.com/unionj-cloud/go-doudou/v2/framework.AnnotationStore`类型的包级别的实例`RouteAnnotationStore`。开发者可以在自定义的interceptor里通过`grpc.MethodAnnotationStore`读取注解，实现自定义的业务逻辑。
 
-Developers can use package level static method `mux.CurrentRoute(r)` supplied by `gorilla mux` to get current route instance, then get route name, then call `httpsrv.RouteAnnotationStore.GetParams` method to get annotation data.
+以下是生成的示例代码：
 
-Below is an example:
+```go
+/**
+* Generated by go-doudou v2.0.8.
+* Don't edit!
+ */
+package grpc
+
+import (
+	"github.com/unionj-cloud/go-doudou/v2/framework"
+)
+
+var MethodAnnotationStore = framework.AnnotationStore{
+	"GetUserRpc": {
+		{
+			Name: "@role",
+			Params: []string{
+				"USER",
+				"ADMIN",
+			},
+		},
+	},
+	"GetAdminRpc": {
+		{
+			Name: "@role",
+			Params: []string{
+				"ADMIN",
+			},
+		},
+	},
+}
+```
+
+### REST服务中的使用方法
+
+开发者可以在自定义中间件中，通过以下两行代码  
+
+```go
+paramsFromCtx := httprouter.ParamsFromContext(r.Context())
+routeName := paramsFromCtx.MatchedRouteName()
+```
+
+获取到路由名称，调用`httpsrv.RouteAnnotationStore`的`GetParams`方法就可以拿到当前路由的注解信息。
+
+以下是示例代码：
 
 ```go
 func Auth(client authClient.IAuthClient) func(inner http.Handler) http.Handler {
 	return func(inner http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			currentRoute := mux.CurrentRoute(r)
-			if currentRoute == nil {
-				inner.ServeHTTP(w, r)
-				return
-			}
-			routeName := currentRoute.GetName()
+			paramsFromCtx := httprouter.ParamsFromContext(r.Context())
+			routeName := paramsFromCtx.MatchedRouteName()
 			if !httpsrv.RouteAnnotationStore.HasAnnotation(routeName, "@role") {
 				inner.ServeHTTP(w, r)
 				return
@@ -220,30 +265,60 @@ func Auth(client authClient.IAuthClient) func(inner http.Handler) http.Handler {
 }
 ```
 
+### gRPC服务中的使用方法
+
+先通过 `method := fullMethod[strings.LastIndex(fullMethod, "/")+1:]` 拿到方法名称，再通过 `MethodAnnotationStore.HasAnnotation` 判断该方法是否加上了该拦截器关注的注解，如果没有，则放行，有则继续执行后面的业务逻辑。后面可以通过 `MethodAnnotationStore.GetParams` 拿到注解参数，实现自定义的业务逻辑。
+
+```go
+func (interceptor *AuthInterceptor) Authorize(ctx context.Context, fullMethod string) (context.Context, error) {
+	method := fullMethod[strings.LastIndex(fullMethod, "/")+1:]
+	if !MethodAnnotationStore.HasAnnotation(method, "@role") {
+		return ctx, nil
+	}
+	token, err := grpc_auth.AuthFromMD(ctx, "Basic")
+	if err != nil {
+		return ctx, err
+	}
+	user, pass, ok := parseToken(token)
+	if !ok {
+		return ctx, status.Error(codes.Unauthenticated, "Provide user name and password")
+	}
+	role, exists := interceptor.userStore[vo.Auth{user, pass}]
+	if !exists {
+		return ctx, status.Error(codes.Unauthenticated, "Provide user name and password")
+	}
+	params := MethodAnnotationStore.GetParams(method, "@role")
+	if !sliceutils.StringContains(params, role.StringGetter()) {
+		return ctx, status.Error(codes.PermissionDenied, "Access denied")
+	}
+	return ctx, nil
+}
+```
+
 ## gRPC
 
-All the rules described above apply to defining gRPC services. In addition, there are two other remarks:
+上文介绍的所有规则都适用于定义gRPC服务。此外还有两点说明：
 
-- `oneof` of `Protobuf v3` is not supported yet
-- When defining the input and output parameters of the stream type, the parameter name must be prefixed with `stream`, for example: `stream1`, `stream2`, `streamReq`, `streamResp`, etc.
+- 暂不支持`Protobuf v3`的`oneof`
+- 定义stream类型的入参和出参时，参数名称必须以`stream`作为前缀，例如：`stream1`，`stream2`，`streamReq`，`streamResp`等等都可以
 
-## More Examples
+## 更多示例
 ```go
 package service
 
 import (
 	"context"
-	v3 "github.com/unionj-cloud/`go-doudou`/openapi/v3"
+	v3 "github.com/unionj-cloud/go-doudou/v2/toolkit/openapi/v3"
 	"os"
 	"usersvc/vo"
 )
 
-// Usersvc is user management service
-// You should set Bearer Token header when you request protected endpoints such as user detail, user pagination and upload avatar.
-// You can add doc for whole service here
+// Usersvc是用户管理服务
+// 你需要设置Authentication请求头，带上bearer token参数来访问被保护的接口，如用户信息查询接口、用户分页查询接口和上传头像接口。
+// 你可以在这里加上服务整体的文档说明
 type Usersvc interface {
-	// PageUsers is user pagination api
-	// show how to define post request api which accepts application/json content-type
+	// PageUsers 用户分页查询接口
+	// 演示如何定义post请求的，application/json类型的接口
 	// @role(user)
 	PageUsers(ctx context.Context,
 		// pagination parameter
@@ -253,8 +328,8 @@ type Usersvc interface {
 		// error
 		err error)
 
-	// GetUser is user detail api
-	// show how to define get http request with query string parameters
+	// GetUser 用户详情接口
+	// 演示如何定义get请求的，带查询字符串参数的接口
 	GetUser(ctx context.Context,
 		// user id
 		userId int) (
@@ -263,8 +338,8 @@ type Usersvc interface {
 		// error
 		err error)
 
-	// PublicSignUp is user signup api
-	// show how to define post request api which accepts application/x-www-form-urlencoded content-type
+	// PublicSignUp 用户注册接口
+	// 演示如何定义post请求的，application/x-www-form-urlencoded类型的接口
 	PublicSignUp(ctx context.Context,
 		// username
 		// @validate(gt=0,lte=60)
@@ -278,8 +353,8 @@ type Usersvc interface {
 		// return OK if success
 		data string, err error)
 
-	// PublicLogIn is user login api
-	// show how to do authentication and issue token
+	// PublicLogIn 用户登录接口
+	// 演示如何定义post请求的，application/x-www-form-urlencoded类型的接口
 	PublicLogIn(ctx context.Context,
 		// username
 		username string,
@@ -288,31 +363,31 @@ type Usersvc interface {
 		// token
 		data string, err error)
 
-	// UploadAvatar is avatar upload api
-	// show how to define file upload api
-	// NOTE: there must be at least one []*v3.FileModel or *v3.FileModel input parameter
+	// UploadAvatar 头像上传接口
+	// 演示如何定义文件上传接口
+	// 注意：必须要有至少一个v3.FileModel类型或[]v3.FileModel类型的入参
 	UploadAvatar(ctx context.Context,
 		// user avatar
 		avatar v3.FileModel, id int) (
 		// return OK if success
 		data string, err error)
 
-	// GetPublicDownloadAvatar is avatar download api
-	// show how to define file download api
-	// NOTE: there must be one and at most one *os.File output parameter
+	// GetPublicDownloadAvatar 头像下载接口
+	// 演示如何定义文件下载接口
+	// 注意：一定要有一个且仅有一个*os.File类型的出参
 	GetPublicDownloadAvatar(ctx context.Context,
 		// user id
 		userId int) (
 		// avatar file
 		data *os.File, err error)
 
-	// BiStream show how to define bi-stream RPC
+	// BiStream 演示如何定义双向流RPC
 	BiStream(ctx context.Context, stream vo.Order) (stream1 vo.Page, err error)
 
-	// ClientStream show how to define client-stream RPC
+	// ClientStream 演示如何定义客户端流RPC
 	ClientStream(ctx context.Context, stream vo.Order) (data vo.Page, err error)
 
-	// ServerStream show how to define server-stream RPC
+	// ServerStream 演示如何定义服务端流RPC
 	ServerStream(ctx context.Context, payload vo.Order) (stream vo.Page, err error)
 }
 ```

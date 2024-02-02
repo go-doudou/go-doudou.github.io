@@ -1,26 +1,27 @@
 ---
 home: true
-title: go-doudou Golang Microservice Framework
+title: go-doudou Go语言微服务框架 快速打造微服务系统
 heroImage: /hero.png
 actions:
-  - text: Get Started
+  - text: 快速开始
     link: /guide/getting-started.md
     type: primary
-  - text: Introduction
+  - text: 介绍
     link: /guide/
     type: secondary
 features:
-  - title: Simplicity
-    details: Starts from golang interface, no need to learn new IDL(interface definition language), such as OpenAPI or Protobuf
-  - title: High-performance
-    details: Adopt HttpRouter (which is also used by gin) as http request router for REST, gRPC as underlying RPC framework for microservice
-  - title: Robust
-    details: The code quality is reliable, and it is still being optimized and iterated, which has been fully tested by online production practice
-  - title: Low-code
-    details: Powerful code generator cli built-in. After defining your interface methods, your only job is implementing your awesome idea.
-  - title: Service Governance
-    details: Built-in service governance support including client-side load balancer, rate limiter, circuit breaker, bulkhead, timeout, retry, tracing, logging and more.
-  - title: Monolith and Microservice 
-    details: Supporting both monolith and microservice architectures gives you flexibility to design your system.
-footer: MIT Licensed | Copyright © 2022-present go-doudou contributors
+  - title: 上手简单
+    details: 从定义Go语言接口开始，无须学习任何接口描述语言，如OpenAPI和Protobuf等
+  - title: 高性能
+    details: 采用高性能router作为http请求路由库开发REST服务，采用gRPC作为底层RPC框架开发微服务
+  - title: 稳定健壮
+    details: 代码质量可靠，仍在持续优化迭代，已经过线上生产实践的充分检验
+  - title: 低代码
+    details: 内置强大的代码生成器。定义好服务接口以后，你的唯一工作就是实现你的业务逻辑
+  - title: 服务治理
+    details: 内置服务治理组件，支持客户端负载均衡、熔断限流、隔仓、超时、重试、日志采集、调用链监控等等
+  - title: 单体和微服务
+    details: 同时支持开发单体应用(REST)和微服务(gRPC)，给你充分的架构灵活性
+footer: MIT Licensed | Copyright © 2022-present 版权属于全体go-doudou贡献者
 ---
+[蜀ICP备2022006047号](https://beian.miit.gov.cn/)

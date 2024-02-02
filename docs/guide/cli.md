@@ -1,15 +1,15 @@
-# CLI
+# 命令行工具
 
-`go-doudou` has built-in code generation CLI. `go-doudou` is the root command and there are two flags for it.
+`go-doudou`内置了基于命令行终端的代码生成器。`go-doudou`是根命令，有两个参数。
 
-- `-v` can tell you current installed version of go-doudou.
+- `-v` 打印当前安装的go-doudou命令行工具的版本
 
 ```shell
 ➜  go-doudou.github.io git:(dev) ✗ go-doudou -v     
-go-doudou version v1.3.3
+go-doudou version v2.0.8
 ```
 
-- `-h` can print help message. As all subcommands have this flag, I will omit it in the following documentation. 
+- `-h` 打印帮助信息。下文介绍的所有的子命令都有这个参数，就不再介绍了。
 
 ```shell
 ➜  go-doudou.github.io git:(dev) ✗ go-doudou -h
@@ -38,17 +38,16 @@ Flags:
 Use "go-doudou [command] --help" for more information about a command.
 ```
 
-And there are several useful subcommands helping you speed up your production. Let's get into them one by one.
+`go-doudou`还提供了若干子命令来加速整个开发流程。我们挨个看一下。
 
 ## version
 
-`go-doudou version` command is mainly used for upgrade `go-doudou`. It tells you not only current installed version, but also the latest release version,
-and asks you if you want to upgrade.
+`go-doudou version` 主要用于升级`go-doudou`命令行工具版本。它不仅打印当前安装版本的信息，还打印最新发布版本的信息，并且询问你是否要升级。
 
 ```shell
 ➜  go-doudou.github.io git:(dev) ✗ go-doudou version
-Installed version is v0.9.8
-Latest release version is v1.3.3
+Installed version is v1.1.9
+Latest release version is v2.0.8
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Do you want to upgrade?: 
   ▸ Yes
@@ -57,16 +56,15 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 
 ## help
 
-`go-doudou help` is the same as `go-doudou -h`.
+`go-doudou help` 同`go-doudou -h`。
 
 ## svc
 
-`go-doudou svc` is the most important and the most commonly used command.
+`go-doudou svc` 是最重要和最常用的命令。
 
 ### init
 
-`go-doudou svc init` is used for initializing go-doudou application. You can run this command in an existing directory, or you can also specify a directory immediately following `init`.
-Then go-doudou will create the directory if it not exists and initial files for starting the development, and also run `git init` underlyingly. If specified directory has been already existed and not empty, go-doudou will only create non-existing files and skip existing files with warning like this:
+`go-doudou svc init` 用于初始化go-doudou应用。你既可以在已有文件夹下执行此命令，也可以在`init`后面指定需要初始化的文件夹路径。如果文件夹不存在，`go-doudou`会创建该文件夹，并且生成一些文件来便于上手开发，还会执行`git init`命令。如果指定的文件夹已经存在并且不为空，`go-doudou`会跳过已存在的文件，只生成不存在的文件，保证已有的代码不会被覆盖。
 
 ```shell
 ➜  go-doudou-tutorials git:(master) go-doudou svc init helloworld
@@ -78,29 +76,25 @@ WARN[2022-02-17 18:14:53] file /Users/wubin1989/workspace/cloud/go-doudou-tutori
 WARN[2022-02-17 18:14:53] file /Users/wubin1989/workspace/cloud/go-doudou-tutorials/helloworld/Dockerfile already exists 
 ```
 
-There is `-m` flag for customizing module name. You can use it like this:
+还有一个`-m` 参数，用于指定模块名称：
 ```shell
 go-doudou svc init helloworld -m github.com/unionj-cloud/helloworld
 ```
 
 ### http
 
-`go-doudou svc http` is used for generating http routes and handlers for RESTful service. For example:
+`go-doudou svc http` 用于生成RESTful接口的http路由和handler代码
 ```shell
-go-doudou svc http --handler -c --doc
+go-doudou svc http -c
 ```
 
-#### Flags
+#### 参数
 
-There are several flags for configuring the code generation behavior. Let me explain them one by one:
+有一些参数可以配置代码生成器的行为。下面我们一一介绍一下：
 
-- `--handler`: `bool` type. If you set this flag, go-doudou will generate default http handler implementations which parse request parameters into form and decode request body into struct, and also send http response back. 
+- `-c` or `--client`: `bool` 类型。用于设置是否生成封装了[go-resty](https://github.com/go-resty/resty) 的http请求客户端代码。
 
-- `-c` or `--client`: `bool` type. It is used for generating [go-resty](https://github.com/go-resty/resty) based http client code.
-
-- `--doc`: `bool` type. It is used for generating [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3) description file in json format.
-
-- `-e` or `--env`: `string` type. It is used for setting server url environment variable name. If you don't set it, it will be the upper case of service interface name in svc.go file. The name will used in client factory function like this:
+- `-e` or `--env`: `string` 类型。用于设置写进http请求客户端代码里的服务端baseUrl的环境变量名。如果没有指定，默认采用`svc.go`文件里的字母大写的服务接口名。
 
 ```go
 func NewHelloworldClient(opts ...ddhttp.DdClientOption) *HelloworldClient {
@@ -113,7 +107,7 @@ func NewHelloworldClient(opts ...ddhttp.DdClientOption) *HelloworldClient {
 }
 ```
 
-In line 2, the `HELLOWORLD` is the default name. As we said before, go-doudou is also supporting monolithic service. If your service client application don't want to join go-doudou cluster and use the out-of-box service discovery and client side load balancing feature, it can set `HELLOWORLD` to your service public url, and it will send requests to that url. Let's try run `go-doudou svc http --handler -c --doc -e godoudou_helloworld` to see what changes:
+上面代码的第2行，`HELLOWORLD`就是默认名称。如前文所述，go-doudou同时支持开发单体应用。如果你不需要客户端程序加入go-doudou微服务集群，享受开箱即用的服务发现和客户端负载均衡机制，你可以直接在配置文件中将`HELLOWORLD`环境变量设置为服务端可以直连的请求地址。我们来执行一下命令`go-doudou svc http -c -e godoudou_helloworld`，看一下有什么变化。
 
 ```go
 func NewHelloworldClient(opts ...ddhttp.DdClientOption) *HelloworldClient {
@@ -126,30 +120,30 @@ func NewHelloworldClient(opts ...ddhttp.DdClientOption) *HelloworldClient {
 }
 ```
 
-- `--case`: `string` type. As there are some anonymous structs defining http response body data structure in generated http handler code, we need this flag to let users configure json tag for fields. It accepts `lowerCamel` or `snake`, default is `lowerCamel`.
+- `--case`: `string` 类型。在生成的默认`http.Handler`接口实现代码里会有一些匿名结构体做为响应体，你可能需要设置这个参数来指定json序列化时的字段名称的命名规则。接受两种值：`lowerCamel` 和 `snake`。默认值为`lowerCamel`。
 
-- `-o` or `--omitempty`: `bool` type. If you set this flag, `,omitempty` will be appended to json tag of fields of every generated anonymous struct in http handlers.
+- `-o` or `--omitempty`: `bool` 类型。如果设置了这个参数，`,omitempty`会被加到默认`http.Handler`接口实现代码里的匿名结构体字段的json标签值的后面。
 
-- `-r` or `--routePattern`: `int` type. It is used for configuring http route pattern generate strategy. If you set it to `0`, go-doudou will convert name of each service interface method from upper-camel case to snake case, then replace `_` to `/`. If you set it to `1`, go-doudou will join lower-case service interface name with each lower-case method name by `/`. Default is `0` which is also recommended. Here is an example. If there is a method named `PublicSignUp` in `Usersvc` interface, its http route will be `/public/sign/up` if you don't set this flag or set this flag to `0` explicitly. If you set this flag to `1`, its http route will be `/usersvc/publicsignup`.
+- `-r` or `--routePattern`: `int` 类型。这个参数用于设置http路由的生成规则。如果值为`0`，`go-doudou`会先将服务接口的方法名称从驼峰命令转成蛇形命令，然后把下划线`_`替换成反斜线`/`，结果作为接口路径。如果值为`1`，`go-doudou`会将服务接口名转成小写，方法名也转成小写，再用反斜线`/`拼接起来，结果作为接口路径。默认值为`0`。举个例子，假设`Usersvc`接口里有一个方法名为`PublicSignUp`，默认会生成`/public/sign/up`这样的接口路径。如果你将此参数设为`1`，则接口路径为`/usersvc/publicsignup`。
 
 #### Subcommands
 
-There is only one subcommand `client` available. It is used for generating golang http client code from OpenAPI 3.0 spec json file. There are some flags for it. Let's see an example:
+只有一个子命令 `client`，用于从json格式的`OpenAPI 3.0`接口文档生成Go语言http请求客户端代码。有几个参数可配置。我用一个例子说明：
 
 ```shell
 go-doudou svc http client -o -e GRAPHHOPPER -f https://docs.graphhopper.com/openapi.json --pkg graphhopper
 ```
 
-- `-e` or `--env`: `string` type. It is used for setting server url environment variable name.
+- `-e` or `--env`: `string` 类型。用于设置写进http请求客户端代码里的服务端baseUrl的环境变量名。
 
-- `-f` or `--file`: `string` type. It is used for setting OpenAPI 3.0 spec json file path or download link.
+- `-f` or `--file`: `string` 类型。用于设置接口文档的本地路径或下载链接。
 
-- `-o` or `--omit`: `bool` type. It is used for configuring whether to append `,omitempty` to json tag.
+- `-o` or `--omit`: `bool` 类型。如果设置了这个参数，会在json标签里的字段名后面加`,omitempty`。
 
-- `-p` or `--pkg`: `string` type. It is used for setting client package name. Default is `client`.
+- `-p` or `--pkg`: `string` 类型。用于设置包名，默认值为`client`。
 
 ::: tip
-There must be `200` response in `responses` object for each api, otherwise client code will not be generated and you will see an error message from command line output for corresponding api like this:
+每个接口都需要有`200`状态码的响应体，否则不会生成该接口的代码，在命令行终端也会输出错误信息。
 
 ```shell
 ➜  go-doudou-tutorials git:(master) ✗ go-doudou svc http client -o -e PETSTORE -f https://petstore3.swagger.io/api/v3/openapi.json --pkg petstore
@@ -165,7 +159,7 @@ ERRO[2022-02-18 11:56:09] 200 response definition not found in api Delete /store
 
 ### grpc
 
-`go-doudou svc grpc` is used to generate the `.proto` suffix file of `Protobuf v3` syntax, gRPC server and client piling code, etc. under the `transport/grpc` path. The `svcimpl.go` file is also generated if it does not exist, and incrementally updated if it already exists. If the `main.go` file does not exist in the `cmd` path, it will be generated, if it already exists, it will be skipped. The generated `main.go` file already has the relevant code to start the gRPC service.
+`go-doudou svc grpc` 用于在`transport/grpc`路径下生成`Protobuf v3`语法的`.proto`后缀文件，gRPC服务端和客户端打桩代码等。如果`svcimpl.go`文件不存在，还会生成该文件，如果已存在，则会增量更新该文件。如果`cmd`路径下不存在`main.go`文件，则会生成该文件，如果已存在，则跳过。生成的`main.go`文件里已经有了启动gRPC服务的相关代码。
 
 ```shell
 ...
@@ -186,61 +180,61 @@ ERRO[2022-02-18 11:56:09] 200 response definition not found in api Delete /store
 
 ### run
 
-`go-doudou svc run` is used for starting our service in development.
+`go-doudou svc run` 用于启动服务。
 
-- `-w` or `--watch`: `bool` type. It is used for enabling watch mode. Not support on windows. I made this feature, but I am not recommending you to use it as I personally prefer to start or shutdown a program through IDE manually.
+- `-w` or `--watch`: `bool` 类型。用于开启`watch`模式，即热重启。不支持windows平台。虽然做了这个功能，但并不推荐使用。
 
 ### push
 
-`go-doudou svc push` is used for building docker image, pushing to your remote repository and generating k8s deployment files. It runs `go mod vendor`, `docker build`, `docker tag`, `docker push` commands sequentially. For example: 
+`go-doudou svc push` 用于生成docker镜像，推到远程镜像仓库，并生成k8s部署文件。实际按顺序依次执行了`go mod vendor`, `docker build`, `docker tag`, `docker push`这几个命令。
 
 ```shell
 go-doudou svc push --pre godoudou_ -r wubin1989
 ```
 
-- `--pre`: `string` type. Its value will be prefixed to image name for grouping your images.
+- `--pre`: `string` 类型。用于设置镜像文件的名称前缀。
 
-- `-r` or `--repo`: `string` type. Docker image will be pushed to this repository.
+- `-r` or `--repo`: `string` type. 用于设置远程镜像仓库地址。
 
-After executed this command, you will get two files: 
+命令执行完毕后，你会得到两个文件：
 
-- `${service}_deployment.yaml`: k8s deploy file for stateless service, recommended to be used for monolith architecture services
-- `${service}_statefulset.yaml`: k8s deploy file for stateful service, recommended to be used for microservice architecture services
+- `${service}_deployment.yaml`: 无状态的k8s应用部署文件，推荐用于单体应用架构。
+- `${service}_statefulset.yaml`: 有状态的k8s应用部署文件，推荐用于微服务架构。
 
 ### deploy
 
-`go-doudou svc deploy` is used for deploying your service to kubernetes. It runs `kubectl apply -f` command underlyingly. For example, 
+`go-doudou svc deploy` 用于将服务部署到k8s。实际执行的是`kubectl apply -f`命令。
 
 ```shell
 go-doudou svc deploy -k helloworld_deployment.yaml
 ```
 
-- `-k` or `--k8sfile`: `string` type. It is used for specifying k8s deployment file path. Default is `${service}_statefulset.yaml`.
+- `-k` or `--k8sfile`: `string` 类型。用于设置k8s部署文件的本地路径。默认值为`${service}_statefulset.yaml`。
 
 ### shutdown
 
-`go-doudou svc shutdown` is used for shutting down your service on kubernetes. It runs `kubectl delete -f` command underlyingly. For example, 
+`go-doudou svc shutdown` 用于从k8s下线服务，实际执行`kubectl delete -f`命令。
 
 ```shell
 go-doudou svc shutdown -k helloworld_deployment.yaml
 ```
 
-- `-k` or `--k8sfile`: `string` type. It is used for specifying k8s deployment file path. Default is `${service}_statefulset.yaml`.  
+- `-k` or `--k8sfile`: `string` 类型。用于设置k8s部署文件的本地路径。默认值为`${service}_statefulset.yaml`。
 
 ## ddl
 
-We have already upgraded ddl tool to lightweight orm, please jump into [ORM](../orm/README.md).
+已从ddl工具升级为轻量级orm，请跳转[ORM](../orm/README.md)章节。
 
 ## name
 
-Subcommand for generating json tag of struct field. Default strategy is lower-camel. Support snake case as well. Unexported fields will be skipped, only modify json tag of each exported field.
+根据指定的命名规则生成结构体字段后面的`json`tag。默认生成策略是**首字母小写的驼峰命名策略**，同时支持蛇形命名。未导出的字段会跳过，只修改导出字段的json标签。支持`omitempty`。
 
-### Flags
+
+### 命令行参数
 
 ```shell
-➜  go-doudou git:(main) go-doudou name -h   
-WARN[0000] Error loading .env file: open /Users/wubin1989/workspace/cloud/.env: no such file or directory 
-bulk add or update struct fields json tag
+➜  go-doudou git:(main) go-doudou name -h
+bulk add or update json tag of struct fields
 
 Usage:
   go-doudou name [flags]
@@ -252,9 +246,9 @@ Flags:
   -s, --strategy string   name of strategy, currently only support "lowerCamel" and "snake" (default "lowerCamel")
 ```
 
-### Usage
+### 用法
 
-- Put `//go:generate go-doudou name --file $GOFILE` into go file
+- 在go文件里写上`//go:generate go-doudou name --file $GOFILE`，不限位置，最好是写在上方。目前的实现是对整个文件的所有struct都生效。
 
 ```go
 //go:generate go-doudou name --file $GOFILE
@@ -281,7 +275,7 @@ type TestName struct {
 }
 ```
 
-- Execute  `go generate ./...` at the same folder
+- 在项目根路径下执行命令`go generate ./...`
 
 ```go
 type Event struct {
@@ -305,6 +299,7 @@ type TestName struct {
 	CallbackN func(param string) bool `json:"callbackN"`
 }
 ```
+
 
 
 
