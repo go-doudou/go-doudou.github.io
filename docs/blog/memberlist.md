@@ -205,7 +205,7 @@ The go-doudou built-in service registry and discovery mechanism is developed bas
 
 ### Startup Flow Diagram
 
-![go-doudou](/images/memberlist-flow.png)
+![go-doudou](/images/memberlist.png)
 
 ### registry.NewNode()
 
