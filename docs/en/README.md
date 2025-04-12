@@ -4,10 +4,10 @@ title: go-doudou Go Microservice Framework for Fast Microservice Development
 heroImage: /hero.png
 actions:
   - text: Get Started
-    link: /guide/getting-started.md
+    link: /en/guide/getting-started.md
     type: primary
   - text: Introduction
-    link: /guide/
+    link: /en/guide/
     type: secondary
 features:
   - title: Easy to Use

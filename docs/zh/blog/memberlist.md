@@ -2,41 +2,42 @@
 sidebar: auto
 ---
 
-# Deep Dive into go-doudou's Built-in Service Registry and Discovery Component
+# 深入解读go-doudou内置服务注册与发现组件
 
-go-doudou is a microservice framework developed in Go language that was open-sourced in early 2021. It initially built a decentralized service registration and discovery mechanism based on the SWIM gossip protocol that is integrated into the go-doudou framework and ready to use out of the box, using the open-source memberlist library from HashiCorp. The SWIM Gossip protocol is a weakly consistent protocol that not only has decentralized characteristics but also includes mechanisms for service registration, node health checks, and message broadcasting, making it very suitable as middleware for service registration and discovery.
+go-doudou是2021年初开源的go语言开发的微服务框架。最初基于hashicorp开源的memberlist库打造了内置于go-doudou框架中开箱即用的遵循SWIM gossip协议的去中心化的服务注册与发现机制。SWIM Gossip协议是一种弱一致性的协议，不仅具有去中心化的特性，还具备服务注册、节点探活、消息广播等机制，非常适合做服务注册与发现中间件。
 
-## Practical Example
+## 实战案例
 
-We'll demonstrate usage through a practical example that includes a complete set of front-end and back-end services for uploading text files to generate word cloud images.
+我们通过一个包含前后台全套服务的上传文本文件生成词云图的实战案例来展示用法。
 
-### Development Environment
+### 开发环境
 
-Docker and docker-compose development environments are required. All microservices need to be packaged as docker images and then started using docker-compose commands.
+需要安装docker和docker-compose开发环境。所有微服务都需打包成docker镜像，然后通过docker-compose命令启动。
 
-### Download the Code
+### 下载代码
 
-After cloning the repository source code to your local machine, please switch to the wordcloud folder.
+克隆仓库源码到本地后，请切到wordcloud文件夹。
 
 ```
 git clone git@github.com:unionj-cloud/go-doudou-tutorials.git
 ```
 
-### Build the Images
+### 打包镜像
 
 ```
 make docker
 ```
 
-### Start the Entire Microservice System
+### 启动整套微服务系统
 
 ```
 make up
 ```
 
-### Initialize Minio
+### 初始化minio
 
-This example uses minio to store user-uploaded files, which requires some initialization work. First, open [http://localhost:9001/](http://localhost:9001/), then log in with the account and password minio/minio123, create a bucket called wordcloud, set `Access Policy` to `public`, and finally create an `access key`: testkey and `access secret`: testsecret.
+本案例采用minio来存储用户上传的文件，需要做一些初始化工作。首先打开[http://localhost:9001/](http://localhost:9001/)，然后用账号密码minio/minio123登录，创建一个桶wordcloud，
+并设置为`Access Policy`设置为`public`，最后创建`access key`：testkey和`access secret`：testsecret。
 
 ![go-doudou](/images/minio1.png)
 ![go-doudou](/images/minio2.png)
@@ -44,15 +45,15 @@ This example uses minio to store user-uploaded files, which requires some initia
 ![go-doudou](/images/minio4.png)
 ![go-doudou](/images/minio5.png)
 
-### Using the System
+### 使用系统
 
-Open [http://localhost:3100/](http://localhost:3100/), log in with the default account and password jackchen/1234, then upload any text format file. After processing, you will see the word cloud image output on the page.
+打开[http://localhost:3100/](http://localhost:3100/)，用默认账号密码jackchen/1234登录，然后上传任意text格式文件，经过一番处理可以看到页面上输出词云图。
 
 ![go-doudou](/images/wordcloud.png)
 
-### Architecture Description
+### 架构说明
 
-In this practical example, the frontend is handled by a UI service developed based on the `vue-vben-admin` framework (since the frontend technology stack is not the focus of this article, we won't elaborate further), and the backend consists of 5 RESTful microservices. Please see the comments below for specific explanations.
+本实战案例前端由一个UI服务负责，基于`vue-vben-admin`框架开发（因前端技术栈不是本文的重点，此处不再赘述），后端由5个RESTful微服务构成。具体说明请看下文的注释。
 
 ```shell
 ➜  wordcloud git:(master) ✗ tree -L 1
@@ -73,25 +74,25 @@ In this practical example, the frontend is handled by a UI service developed bas
 ├── screencapture2.png
 ├── shellscripts
 ├── sqlscripts
-├── wordcloud-bff  # BFF service, providing a single interface entry point for the frontend, while tailoring and formatting data for frontend requirements
-├── wordcloud-maker  # Maker service, responsible for generating word cloud images based on the word frequency statistics of the text
-├── wordcloud-seg  # Seg service, responsible for tokenizing Chinese and English text content and calculating word frequency
-├── wordcloud-task  # Task service, responsible for storing and querying word cloud image tasks created by users
+├── wordcloud-bff  # BFF服务，为前端提供唯一的接口入口，同时针对前端的需求对数据做裁剪和格式化转换
+├── wordcloud-maker  # Maker服务，负责根据文本的词频统计结果生成词云图
+├── wordcloud-seg  # Seg服务，负责对文本内容做中英文分词，并统计词频
+├── wordcloud-task  # Task服务，负责存储和查询用户创建的词云图任务
 ├── wordcloud-ui
-└── wordcloud-user  # User service, responsible for registration, login, and token generation
+└── wordcloud-user  # User服务，负责注册、登录和生成token
 
 16 directories, 6 files
 ```
 
-### Service List
+### 服务列表
 
-Readers can open [http://localhost:6060/go-doudou/registry](http://localhost:6060/go-doudou/registry) to view the service list. You need to enter HTTP basic account and password admin/admin.
+读者可以打开[http://localhost:6060/go-doudou/registry](http://localhost:6060/go-doudou/registry)查看服务列表。需要输入Http basic账号密码admin/admin。
 
 ![go-doudou](/images/registry.png)
 
-### Code Analysis
+### 代码解读
 
-Taking the BFF service as an example, let's look at the service registration and discovery related code. Please refer to the comments below for specific explanations.
+我们以BFF服务为例，来看一下服务注册与发现相关代码。具体说明请参考下文的注释。
 
 ```go
 package main
@@ -101,62 +102,62 @@ import (
 )
 
 func main() {
-    // Load configuration from environment variables
+    // 从环境变量中加载配置
 	conf := config.LoadFromEnv()
 
-    // User service http request client
+    // User服务http请求客户端
 	var userClient *userclient.UsersvcClient
-    // Maker service http request client
+    // Maker服务http请求客户端
 	var makerClient *makerclient.WordcloudMakerClient
-    // Task service http request client
+    // Task服务http请求客户端
 	var taskClient *taskclient.WordcloudTaskClient
 
-    // Read the service mode from environment variables, monolithic or microservice
-    // The environment variable name and value can be completely customized, not related to the go-doudou framework
-    // The distinction of service modes is just for convenient local development
+    // 从环境变量中读取服务模式，单体还是微服务
+    // 环境变量名称和值完全可以自定义，与go-doudou框架无关
+    // 做服务模式的区分只是为了方便本地开发
 	if os.Getenv("GDD_MODE") == "micro" {
-        // Service registration
+        // 服务注册
 		err := registry.NewNode()
 		if err != nil {
 			logrus.Panicln(fmt.Sprintf("%+v", err))
 		}
-        // Service offline, release resources
+        // 服务下线，释放资源
 		defer registry.Shutdown()
-        // Create a client load balancer based on go-doudou's built-in service registration and discovery mechanism
-        // Client load balancer for User service
+        // 创建基于go-doudou内置服务注册与发现机制的客户端负载均衡器
+        // User服务的客户端负载均衡器
 		userProvider := ddhttp.NewMemberlistServiceProvider("wordcloud-usersvc")
-        // Create an http request client instance for User service
+        // 创建User服务的http请求客户端实例
 		userClient = userclient.NewUsersvcClient(ddhttp.WithProvider(userProvider))
-        // Client load balancer for Maker service
+        // Maker服务的客户端负载均衡器
 		makerProvider := ddhttp.NewMemberlistServiceProvider("wordcloud-makersvc")
-        // http request client instance for Maker service
+        // Maker服务的http请求客户端实例
 		makerClient = makerclient.NewWordcloudMakerClient(ddhttp.WithProvider(makerProvider))
-        // Client load balancer for Task service
+        // Task服务的客户端负载均衡器
 		taskProvider := ddhttp.NewMemberlistServiceProvider("wordcloud-tasksvc")
-        // http request client instance for Task service
+        // Task服务的http请求客户端实例
 		taskClient = taskclient.NewWordcloudTaskClient(ddhttp.WithProvider(taskProvider))
 	} else {
-        // Direct connection http request client instance for User service
+        // 直连User服务的http请求客户端实例
 		userClient = userclient.NewUsersvcClient()
-        // Direct connection http request client instance for Maker service
+        // 直连Maker服务的http请求客户端实例
 		makerClient = makerclient.NewWordcloudMakerClient()
-        // Direct connection http request client instance for Task service
+        // 直连Task服务的http请求客户端实例
 		taskClient = taskclient.NewWordcloudTaskClient()
 	}
 
-    // Enable Jaeger call chain monitoring
+    // 开启Jaeger调用链监控
 	tracer, closer := tracing.Init()
 	defer closer.Close()
 	opentracing.SetGlobalTracer(tracer)
 
 	rec := metrics.NewPrometheusRecorder(prometheus.DefaultRegisterer)
 
-    // Add circuit breakers, timeouts, retries, and other resilience and fault tolerance mechanisms and Prometheus metrics collection to User, Maker, and Task services
+    // 给User、Maker、Task服务增加熔断器、超时、重试等弹性与容错机制与Prometheus指标采集
 	userClientProxy := userclient.NewUsersvcClientProxy(userClient, rec)
 	makerClientProxy := makerclient.NewWordcloudMakerClientProxy(makerClient, rec)
 	taskClientProxy := taskclient.NewWordcloudTaskClientProxy(taskClient, rec)
 
-    // Create minio client
+    // 创建minio客户端
 	endpoint := conf.BizConf.OssEndpoint
 	accessKeyID := conf.BizConf.OssKey
 	secretAccessKey := conf.BizConf.OssSecret
@@ -171,7 +172,7 @@ func main() {
 		panic(err)
 	}
 
-    // Inject User, Maker, Task service http request client instances, minio client instance
+    // 将User、Maker、Task服务http请求客户端实例、minio客户端实例注入
 	svc := service.NewWordcloudBff(conf, minioClient, makerClientProxy, taskClientProxy, userClientProxy)
 	handler := httpsrv.NewWordcloudBffHandler(svc)
 	srv := ddhttp.NewDefaultHttpSrv()
@@ -186,40 +187,41 @@ func main() {
 	})
 
 	srv.AddMiddleware(
-        // Add bulkhead mechanism
+        // 增加隔仓机制
 		ddhttp.BulkHead(conf.ConConf.BulkheadWorkers, conf.ConConf.BulkheadMaxwaittime),
-        // Add redis-based rate limiter
+        // 增加基于redis的限流器
 		httpsrv.RedisRateLimit(rdb, fn),
 	)
 
 	srv.AddRoute(httpsrv.Routes(handler)...)
 
-    // Start http service
+    // 启动http服务
 	srv.Run()
 }
 ```
 
-## Source Code Analysis
 
-The go-doudou built-in service registry and discovery mechanism is developed based on the memberlist library and has been modified for microservice application scenarios. The memberlist library contains many treasures, and each time you read the source code, you gain new insights. Even if readers don't use this mechanism in their actual project development, it's still recommended to study it. Please first review the startup flow diagram, and later we will focus on code analysis of several important functions.
+## 源码解读
 
-### Startup Flow Diagram
+go-doudou内置的服务注册与发现机制基于memberlist库开发，同时根据微服务应用场景做了一些改造。memberlist库里有很多宝藏，每次阅读源码都有新的认知。即使读者在实际项目开发中没有采用这种机制，也推荐阅读一番。请读者先浏览一下启动流程图，后文会着重针对几个重要的函数做源码解读。
 
-![go-doudou](/images/memberlist-flow.png)
+### 启动流程图
+
+![go-doudou](/images/memberlist.png)
 
 ### registry.NewNode()
 
-In this function, go-doudou encapsulates the initialization processes for two mechanisms: one based on memberlist and another based on Nacos. It decides which mechanism to use based on configuration and supports using both mechanisms simultaneously.
+go-doudou在这个函数里封装了基于memberlist和基于Nacos的两种机制的初始化流程，根据配置来决定采用哪一种机制，支持两种机制同时采用。
 
 ```go
 func NewNode(data ...map[string]interface{}) error {
-    // Read configuration from environment variable GDD_SERVICE_DISCOVERY_MODE
+    // 从环境变量GDD_SERVICE_DISCOVERY_MODE读取配置
 	for mode, _ := range getModemap() {
 		switch mode {
 		case "nacos":
 			nacos.NewNode(data...)
 		case "memberlist":
-            // Initialize memberlist mechanism
+            // 初始化memberlist机制
 			err := newNode(data...)
 			if err != nil {
 				return err
@@ -234,13 +236,13 @@ func NewNode(data ...map[string]interface{}) error {
 
 ### registry.newNode()
 
-This function creates a memberlist instance, and the startup flow diagram actually starts from here.
+在这个函数里创建memberlist实例，上文的启动流程图实际从这里开始。
 
 ```go
 func newNode(data ...map[string]interface{}) error {
-    // Initialize memberlist configuration
+    // 初始化memberlist配置
 	mconf = newConf()
-    // Initialize HTTP-related configurations and metadata for the service itself, omitted here
+    // 初始化服务本身的http相关配置和元数据，此处略
 	...
 	mmeta := mergedMeta{
 		Meta: nodeMeta{
@@ -270,12 +272,12 @@ func newNode(data ...map[string]interface{}) error {
 	}
 	mconf.Events = events
 	var err error
-    // createMemberlist actually calls memberlist.Create
-    // Written this way for unit testing
+    // createMemberlist实际调用的是memberlist.Create
+    // 这里这样写是为了单元测试
 	if mlist, err = createMemberlist(mconf); err != nil {
 		return errors.Wrap(err, "[go-doudou] Failed to create memberlist")
 	}
-    // Join the cluster where the seed node is located
+    // 加入种子节点所在集群
 	if err = join(); err != nil {
 		mlist.Shutdown()
 		return errors.Wrap(err, "[go-doudou] Node register failed")
@@ -291,11 +293,11 @@ func newNode(data ...map[string]interface{}) error {
 
 ### memberlist.NewMemberlist
 
-Creates a memberlist instance
+创建memberlist实例
 
 ```go
 func NewMemberlist(conf *Config) (*Memberlist, error) {
-    // Check protocol version, go-doudou doesn't involve this logic
+    // 判断协议版本，go-doudou不涉及这块逻辑
 	if conf.ProtocolVersion < ProtocolVersionMin {
 		return nil, fmt.Errorf("Protocol version '%d' too low. Must be in range: [%d, %d]",
 			conf.ProtocolVersion, ProtocolVersionMin, ProtocolVersionMax)
@@ -321,7 +323,7 @@ func NewMemberlist(conf *Config) (*Memberlist, error) {
 		}
 	}
 
-    // Log related configuration
+    // 日志相关配置
 	if conf.LogOutput != nil && conf.Logger != nil {
 		return nil, fmt.Errorf("Cannot specify both LogOutput and Logger. Please choose a single log configuration setting.")
 	}
@@ -336,8 +338,8 @@ func NewMemberlist(conf *Config) (*Memberlist, error) {
 		logger = log.New(logDest, "", log.LstdFlags)
 	}
 
-	// If the user doesn't provide a custom Transport, create a default one
-    // Responsible for listening to TCP and UDP messages
+	// 如果用户没有传入自定义Transport，则创建一个默认Transport
+    // 负责监听TCP和UDP消息
 	transport := conf.Transport
 	if transport == nil {
 		nc := &NetTransportConfig{
@@ -368,8 +370,7 @@ func NewMemberlist(conf *Config) (*Memberlist, error) {
 			limit = 10
 		}
 
-        // If the user doesn't specify BindPort, it will try 10 times to bind to an available port,
-        // shared by both TCP and UDP
+        // 如果用户没有指定BindPort，则会尝试10次，绑定一个可用端口，供TCP和UDP共用
 		nt, err := makeNetRetry(limit)
 		if err != nil {
 			return nil, fmt.Errorf("Could not set up network transport: %v", err)
@@ -389,7 +390,7 @@ func NewMemberlist(conf *Config) (*Memberlist, error) {
 		nodeAwareTransport = &shimNodeAwareTransport{transport}
 	}
 
-    // Create and initialize memberlist instance
+    // 创建并初始化memberlist实例
 	m := &Memberlist{
 		config:               conf,
 		shutdownCh:           make(chan struct{}),
@@ -411,16 +412,16 @@ func NewMemberlist(conf *Config) (*Memberlist, error) {
 		return m.estNumNodes()
 	}
 
-	// Refresh public Host and port
+	// 刷新对外的Host和端口
 	if _, _, err := m.refreshAdvertise(); err != nil {
 		return nil, err
 	}
 
-    // Start TCP message listening goroutine
+    // 开启TCP消息监听goroutine
 	go m.streamListen()
-    // Start UDP message listening goroutine
+    // 开启UDP消息监听goroutine
 	go m.packetListen()
-    // Start goroutine to handle five types of messages sent via UDP: suspectMsg, aliveMsg, deadMsg, weightMsg, and userMsg
+    // 开启针对通过UDP发来的suspectMsg、aliveMsg、deadMsg、weightMsg和userMsg五种消息类型的处理goroutine
 	go m.packetHandler()
 	return m, nil
 }
@@ -428,20 +429,19 @@ func NewMemberlist(conf *Config) (*Memberlist, error) {
 
 ### m.aliveNode
 
-This memberlist instance method is responsible for handling alive messages, which can either process messages from other nodes or handle messages when initializing itself to set its state as alive.
+这个memberlist实例方法负责处理存活消息，可以是处理其他节点发来的消息，也可以处理自己初始化时将自己设为存活状态的消息。
 
 ```go
 func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
-    // Lock to ensure thread safety
+    // 加锁，确保线程安全
 	m.nodeLock.Lock()
 	defer m.nodeLock.Unlock()
 
-    // Retrieve the node status value from m's dictionary-type node cache nodeMap using the node name in the alive message
+    // 从m的字典类型的节点缓存nodeMap里取出该存活消息说的节点的名称对应的节点状态值
 	state, ok := m.nodeMap[a.Node]
 
-	// If the local node has already actively left and the node mentioned in the alive message is itself, return directly
-    // The go-doudou service node doesn't have an "actively leave" situation because the node list cache of each node
-    // won't clear the node information that "actively leaves", which would cause memory leaks
+	// 如果本地节点已经主动离开了，且该存活消息说的节点就是自己，则直接返回
+    // go-doudou服务节点不存在“主动离开“这种情况，因为群各节点的节点列表缓存不会清除”主动离开”的节点信息，会造成内存泄露
 	if m.hasLeft() && a.Node == m.config.Name {
 		return
 	}
@@ -456,7 +456,7 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 		}
 	}
 
-	// Alive callback function, the go-doudou framework doesn't use this, and no application scenario has been found yet
+	// Alive回调函数，go-doudou框架没有用到，暂时没有找到应用场景
 	if m.config.Alive != nil {
 		if len(a.Vsn) < 6 {
 			m.logger.Printf("[WARN] memberlist: ignoring alive message for '%s' (%v:%d) because Vsn is not present",
@@ -482,16 +482,16 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 		}
 	}
 
-	// Determine if this is a new node we haven't seen before; if so, add it to the local node cache dictionary
+	// 判断是否是我们之前没有见过的新节点，如果是，则放入本地节点缓存字典
 	var updatesNode bool
 	if !ok {
-        // Check if it's a blacklisted IP; if so, discard the message
+        // 判断是否是我们拉黑的ip，如果是，则直接丢弃消息
 		errCon := m.config.AddrAllowed(a.Addr)
 		if errCon != nil {
 			m.logger.Printf("[WARN] memberlist: Rejected node %s (%v): %s", a.Node, a.Addr, errCon)
 			return
 		}
-        // Create and initialize node state
+        // 创建并初始化节点状态
 		state = &nodeState{
 			Node: Node{
 				Name: a.Node,
@@ -501,7 +501,7 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 			},
 			State: StateDead,
 		}
-        // Protocol version compatibility related code, not relevant to go-doudou
+        // 协议版本兼容性相关代码，go-doudou不涉及
 		if len(a.Vsn) > 5 {
 			state.PMin = a.Vsn[0]
 			state.PMax = a.Vsn[1]
@@ -511,49 +511,46 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 			state.DCur = a.Vsn[5]
 		}
 
-		// Put the node state into the node cache dictionary
+		// 将节点状态放入节点缓存字典
 		m.nodeMap[a.Node] = state
 
-		// Randomly select an offset, with the purpose of exchanging nodes later,
-        // equivalent to shuffling the node list, to avoid consecutive node health check failures,
-        // which would increase the overhead of the node health checking mechanism
+		// 随机取一个offset，目的是在后面做节点交换，相当于对节点列表做一个shuffle，
+        // 避免连续多个节点都探活失败，增加节点探活机制的开销
 		n := len(m.nodes)
 		offset := randomOffset(n)
 
-		// First put this node state at the end, then swap positions with the node at offset
+		// 先将该节点状态放到最后，然后再跟位于offset的节点交换位置
 		m.nodes = append(m.nodes, state)
 		m.nodes[offset], m.nodes[n] = m.nodes[n], m.nodes[offset]
 
-		// Perform atomic increment of node count
+		// 执行节点数量加1的原子性操作
 		atomic.AddUint32(&m.numNodes, 1)
 	} else {
-        // If we get here, it means the alive message is about a known node, so check if the new Host and port
-        // are consistent with the old Host and port. If not, execute the logic below
+        // 执行到这里说明存活消息说的节点是已知节点，则判断一下新Host和端口跟旧Host和端口是否一致,
+        // 如果不一致，则执行下面的逻辑
 		if state.Addr != a.Addr || state.Port != a.Port {
-            // Check if the new Host is blacklisted
+            // 判断新Host是否已被拉黑
 			errCon := m.config.AddrAllowed(a.Addr)
 			if errCon != nil {
 				m.logger.Printf("[WARN] memberlist: Rejected IP update from %v to %v for node %s: %s", a.Node, state.Addr, a.Addr, errCon)
 				return
 			}
-            // If DeadNodeReclaimTime is configured (i.e., how long a dead node must wait before it can declare itself
-            // alive again with the same name but a different address), check if that time has passed.
-            // If the time has passed, it can declare itself alive, just with a different Host or port
+            // 如果配置了DeadNodeReclaimTime（即必须经过多长时间以后，死亡节点才可以以相同的名称和不同的地址声明自己还活着），则判断是否该时间已过，
+            // 如果已过时间，则可以声明自己还活着，只是换了个Host或端口
 			canReclaim := (m.config.DeadNodeReclaimTime > 0 &&
 				time.Since(state.StateChange) > m.config.DeadNodeReclaimTime)
 
-			// If the node state in the cache is "actively left" or "dead" but can reclaim aliveness,
-            // update the node state in the cache
+			// 如果缓存中的节点状态是“主动离开”或已“死亡”，但是可以重新声明存活，则更新缓存中的节点状态
 			if state.State == StateLeft || (state.State == StateDead && canReclaim) {
 				m.logger.Printf("[INFO] memberlist: Updating address for left or failed node %s from %v:%d to %v:%d",
 					state.Name, state.Addr, state.Port, a.Addr, a.Port)
 				updatesNode = true
 			} else {
-                // If the conditions for reclaiming aliveness are not met, log a node conflict
+                // 如果不满足重新声明存活的条件，则打印节点冲突日志
 				m.logger.Printf("[ERR] memberlist: Conflicting address for %s. Mine: %v:%d Theirs: %v:%d Old state: %v",
 					state.Name, state.Addr, state.Port, a.Addr, a.Port, state.State)
 
-				// If a node conflict callback is configured, call it
+				// 如果配置了节点冲突回调函数，则调用该回调函数
 				if m.config.Conflict != nil {
 					other := Node{
 						Name: a.Node,
@@ -568,45 +565,43 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 		}
 	}
 
-    // If the Incarnation value in the alive message is less than or equal to the Incarnation value in the cache,
-    // and it's neither about the local node nor does it need to update the node cache, discard the message.
-    // The Incarnation value serves as a kind of version control for node state, or an optimistic lock
+    // 如果存活消息中的Incarnation属性值小于或等于缓存中的Incarnation属性值，
+    // 并且既不是关于本地节点的，也不需要更新节点缓存，则丢弃消息。
+    // Incarnation属性值相当于一种节点状态的版本控制，或者说是乐观锁
 	isLocalNode := state.Name == m.config.Name
 	if a.Incarnation <= state.Incarnation && !isLocalNode && !updatesNode {
 		return
 	}
 
-	// If the Incarnation value in the alive message is less than the Incarnation value in the cache
-    // and it's about the local node, discard the message
+	// 如果存活消息中的Incarnation属性值小于缓存中的Incarnation属性值，且关于本地节点，则丢弃消息
 	if a.Incarnation < state.Incarnation && isLocalNode {
 		return
 	}
 
-	// Delete the timer that suspects the node is dead
+	// 删除怀疑节点已死的超时器
 	delete(m.nodeTimers, a.Node)
 
 	// Store the old state and meta data
 	oldState := state.State
 	oldMeta := state.Meta
 
-	// If it's not initializing the local node state during startup but is about the local node,
-    // execute the logic below
+	// 如果不是启动时初始化本地节点状态，但是关于本地节点的，
+    // 则执行下面的逻辑
 	if !bootstrap && isLocalNode {
-		// Calculate protocol version matrix
+		// 计算协议版本矩阵
 		versions := []uint8{
 			state.PMin, state.PMax, state.PCur,
 			state.DMin, state.DMax, state.DCur,
 		}
 
-        // If the Incarnation value in the alive message is the same as the Incarnation value in the node state cache,
-        // we need special handling because this situation could arise from the following scenario:
-		// 1) Start with configuration C and join the cluster
-		// 2) Force quit/process killed/server shutdown
-		// 3) Restart with configuration C' and join the cluster
+        // 如果存活消息中的Incarnation属性值与缓存中的节点状态的Incarnation属性值相同，我们需要特殊处理，
+        // 因为这种情况可能是由于下述情形产生的：
+		// 1) 以配置C启动，并加入集群
+		// 2) 强制退出/进程被杀死/服务器关机
+		// 3) 以配置C'重启，并加入集群
 		//
-        // In this case, both other nodes and the local node will see the same incarnation value,
-        // but the node state may have changed. So we need to check for equality.
-        // In most cases, we just need to ignore the message, but sometimes we might need to refute back.
+        // 在这种情况下，其他节点和本地节点会看到相同的incarnation属性值，但是节点状态可能已经变了。
+        // 因此，我们需要做判等。大多数情况下，我们只需要忽略消息，但是有时我们可能需要反驳回去。
 		if a.Incarnation == state.Incarnation &&
 			bytes.Equal(a.Meta, state.Meta) &&
 			bytes.Equal(a.Vsn, versions) {
@@ -615,10 +610,10 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 		m.refute(state, a.Incarnation)
 		m.logger.Printf("[WARN] memberlist: Refuting an alive message for '%s' (%v:%d) meta:(%v VS %v), vsn:(%v VS %v)", a.Node, a.Addr, a.Port, a.Meta, state.Meta, a.Vsn, versions)
 	} else {
-        // Add the alive message for this node to the broadcast queue again, broadcasting to other nodes
+        // 将该节点存活消息再加入广播队列，广播给其他节点
 		m.encodeBroadcastNotify(a.Node, aliveMsg, a, notify)
 
-		// Update protocol version information, not relevant to go-doudou
+		// 更新协议版本信息，go-doudou不涉及
 		if len(a.Vsn) > 0 {
 			state.PMin = a.Vsn[0]
 			state.PMax = a.Vsn[1]
@@ -628,7 +623,7 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 			state.DCur = a.Vsn[5]
 		}
 
-        // Update the node state in the cache and the Incarnation property
+        // 更新缓存中的节点状态以及Incarnation属性
 		state.Incarnation = a.Incarnation
 		state.Meta = a.Meta
 		state.Addr = a.Addr
@@ -639,24 +634,21 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 		}
 	}
 
-	// Update metrics monitoring items, used to calculate node health value,
-    // also calculated as a dimension when go-doudou dynamically calculates node weight
+	// 更新指标监控项，用于计算节点健康值，go-doudou动态计算节点权重时也会算作一个维度
 	metrics.IncrCounter([]string{"memberlist", "msg", "alive"}, 1)
 
-	// Execute relevant callback functions
+	// 执行相关回调函数
 	if m.config.Events != nil {
 		if oldState == StateDead || oldState == StateLeft {
-            // If the node state changes from "dead" or "actively left" to "alive",
-            // execute the Join event callback function
+            // 如果节点状态从“死亡”或“主动离开”变成“存活”，则执行Join事件的回调函数
 			state.Node.State = state.State
 			m.config.Events.NotifyJoin(&state.Node)
 		} else if oldState == StateSuspect {
 			state.Node.State = state.State
-            // If the node state changes from "suspected dead" to "alive",
-            // execute the SuspectSateChange event callback function
+            // 如果节点状态从“疑似死亡”变成“存活”，则执行SuspectSateChange事件的回调函数
 			m.config.Events.NotifySuspectSateChange(&state.Node)
 		} else if !bytes.Equal(oldMeta, state.Meta) {
-			// If only metadata is updated, execute the Update event callback function
+			// 如果只是元数据更新，则执行Update事件的回调函数
 			m.config.Events.NotifyUpdate(&state.Node)
 		}
 	}
@@ -665,23 +657,23 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 
 ### m.schedule
 
-This method implements the core scheduling logic of memberlist.
+这个方法里实现了memberlist的核心调度逻辑。
 
 ```go
 func (m *Memberlist) schedule() {
-    // Lock to ensure thread safety
+    // 加锁，确保线程安全
 	m.tickerLock.Lock()
 	defer m.tickerLock.Unlock()
 
-	// If the timer task list is not empty, return
+	// 如果定时任务列表不为空，则返回
 	if len(m.tickers) > 0 {
 		return
 	}
 
-    // Create an unbuffered channel for stopping timer tasks; when we need to stop the timer tasks, we close it
+    // 创建用于停止定时任务的无缓冲通道，当我们需要停掉定时任务的时候，我们就关闭它
 	stopCh := make(chan struct{})
 
-	// Create a node health check timer task
+	// 创建一个节点探活定时任务
 	if m.config.ProbeInterval > 0 {
 		t := time.NewTicker(m.config.ProbeInterval)
 		go m.triggerFuncDynamic(func() time.Duration {
@@ -690,12 +682,12 @@ func (m *Memberlist) schedule() {
 		m.tickers = append(m.tickers, t)
 	}
 
-	// Create a TCP-based timer task for synchronizing node lists with other nodes
+	// 创建一个基于TCP的与其他节点同步节点列表的定时任务
 	if m.config.PushPullInterval > 0 {
 		go m.pushPullTrigger(stopCh)
 	}
 
-	// Create a timer task for broadcasting UDP messages
+	// 创建一个广播UDP消息的定时任务
 	if m.config.GossipInterval > 0 && m.config.GossipNodes > 0 {
 		t := time.NewTicker(m.config.GossipInterval)
 		go m.triggerFuncDynamic(func() time.Duration {
@@ -704,30 +696,20 @@ func (m *Memberlist) schedule() {
 		m.tickers = append(m.tickers, t)
 	}
 
-	// Create a timer task for dynamically calculating the local node weight and broadcasting it
+	// 创建一个动态计算本地节点权重并广播出去的定时任务
 	if m.config.WeightInterval > 0 {
 		t := time.NewTicker(m.config.WeightInterval)
 		go m.triggerFunc(m.config.WeightInterval, t.C, stopCh, m.weight)
 		m.tickers = append(m.tickers, t)
 	}
 
-	// If the timer task list is not empty, assign the just-created stopCh channel to the m variable's stopTick property
+	// 如果定时任务列表不为空，则将刚才创建的stopCh通道赋值给m变量的stopTick属性
 	if len(m.tickers) > 0 {
 		m.stopTick = stopCh
 	}
 }
 ```
 
-## Conclusion
+## 总结
 
-This article has introduced go-doudou's built-in service registration and discovery mechanism based on the SWIM gossip protocol, demonstrated its basic usage through a practical example of generating word cloud images from uploaded text files, and provided an overview of the startup process with detailed explanations of the core source code. The aim is to help gophers better understand the internal mechanisms of the go-doudou microservice framework.
-
-From the above code, we can see that go-doudou implements a decentralized service registration and discovery mechanism based on the gossip protocol. The key features include:
-
-1. **Decentralized Architecture**: No central registry server is needed, making the system more resilient.
-2. **Automatic Service Registration**: Services automatically register with the cluster upon startup.
-3. **Health Checking**: The SWIM protocol provides efficient health checking with low overhead.
-4. **Metadata Exchange**: Services exchange metadata with other nodes upon joining the cluster.
-5. **Event-Driven Notifications**: The system is notified when nodes join or leave, ensuring the registry is up-to-date.
-
-This built-in service registry and discovery component makes go-doudou particularly suitable for containerized environments, edge computing, and scenarios where simple deployment is a priority. 
+本文介绍了go-doudou内置的基于SWIM gossip协议的服务注册与发现机制，然后通过一个上传文本文件生成词云图的实战案例介绍了基本用法， 最后通过启动流程图总览了整个流程中的要点，并对核心源码做了详细解读。希望可以帮助各位gopher更好的理解go-doudou微服务框架的内在机制。

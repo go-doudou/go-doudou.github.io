@@ -11,20 +11,19 @@ export const en: NavbarConfig = [
     link: '/resources/',
   },
   {
+    text: 'Blog',
+    link: '/blog/',
+  },
+  {
     text: 'Contribution',
     link: '/contribution/',
   },
   {
-    text: `v${version}`,
-    children: [
-      {
-        text: 'v0.x',
-        link: 'https://github.com/unionj-cloud/go-doudou/blob/v0.9.8/README.md',
-      },
-      {
-        text: 'Release Notes',
-        link: 'https://github.com/unionj-cloud/go-doudou/releases',
-      },
-    ],
+    text: `Release Notes`,
+    link: 'https://github.com/unionj-cloud/go-doudou/releases',
+  },
+  {
+    text: `中文`,
+    link: '/zh/',
   },
 ]

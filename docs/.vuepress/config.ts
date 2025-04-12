@@ -36,10 +36,15 @@ export default defineUserConfig<DefaultThemeOptions>({
 
   locales: {
     "/": {
+      lang: "en-US",
+      title: "go-doudou",
+      description: "Go Microservice Framework (REST/gRPC)",
+    },
+    "/zh/": {
       lang: "zh-CN",
       title: "go-doudou",
       description: "Go语言微服务框架(REST/gRPC)",
-    },
+    }
   },
 
   themeConfig: {
@@ -48,6 +53,40 @@ export default defineUserConfig<DefaultThemeOptions>({
     // theme-level locales config
     locales: {
       '/': {
+        // navbar
+        navbar: navbar.en,
+        selectLanguageName: 'English',
+        selectLanguageText: 'Languages',
+        selectLanguageAriaLabel: 'Select language',
+
+        // sidebar
+        sidebar: sidebar.en,
+
+        // page meta
+        editLinkText: 'Edit this page on GitHub',
+        lastUpdatedText: 'Last Updated',
+        contributorsText: 'Contributors',
+
+        // custom containers
+        tip: 'Tip',
+        warning: 'Warning',
+        danger: 'Danger',
+
+        // 404 page
+        notFound: [
+          'Page not found',
+          'How did we get here?',
+          'This is a 404 page',
+          'Looks like we\'ve entered a broken link',
+        ],
+        backToHome: 'Back to home',
+
+        // a11y
+        openInNewWindow: 'Open in new window',
+        toggleDarkMode: 'Toggle dark mode',
+        toggleSidebar: 'Toggle sidebar',
+      },
+      '/zh/': {
          // navbar
          navbar: navbar.zh,
          selectLanguageName: '简体中文',
@@ -80,7 +119,7 @@ export default defineUserConfig<DefaultThemeOptions>({
          openInNewWindow: '在新窗口打开',
          toggleDarkMode: '切换夜间模式',
          toggleSidebar: '切换侧边栏',
-      },
+      }
     },
 
     themePlugins: {

@@ -1,11 +1,11 @@
 # gRPC
 
-## Service Registration and Discovery
+## 服务注册与发现
 
-`go-doudou` supports two service registration and discovery mechanisms: `etcd` and `nacos`. REST services registered in the registry will automatically have the `_rest` suffix added to their service name, and gRPC services will have the `_grpc` suffix, to distinguish between them.
+`go-doudou`支持两种服务注册与发现机制：`etcd`和`nacos`。REST服务注册在注册中心的服务名称会自动加上 `_rest` 后缀，gRPC服务注册在注册中心的服务名称会自动加上 `_grpc`，以作区分。
 
 ::: tip
-The `etcd` and `nacos` mechanisms can be used simultaneously in one service
+`etcd`和`nacos`两种机制可以在一个服务中同时使用
 
 ```shell
 GDD_SERVICE_DISCOVERY_MODE=etcd,nacos
@@ -14,11 +14,11 @@ GDD_SERVICE_DISCOVERY_MODE=etcd,nacos
 
 ### Etcd
 
-`go-doudou` has built-in support for using etcd as a registry center for service registration and discovery since v2. The following environment variables need to be configured:
+`go-doudou`从v2版本起内建支持使用etcd作为注册中心，实现服务注册与发现。需配置如下环境变量:  
 
-- `GDD_SERVICE_NAME`: Service name, required
-- `GDD_SERVICE_DISCOVERY_MODE`: Service registration and discovery mechanism name, `etcd`, required
-- `GDD_ETCD_ENDPOINTS`: etcd connection address, required
+- `GDD_SERVICE_NAME`: 服务名称，必须
+- `GDD_SERVICE_DISCOVERY_MODE`: 服务注册与发现机制名称，`etcd`，必须
+- `GDD_ETCD_ENDPOINTS`: etcd连接地址，必须
 
 ```shell
 GDD_SERVICE_NAME=grpcdemo-server
@@ -28,11 +28,11 @@ GDD_ETCD_ENDPOINTS=localhost:2379
 
 ### Nacos
 
-`go-doudou` has built-in support for using Alibaba's Nacos as a registry center for service registration and discovery. The following environment variables need to be configured:
+`go-doudou`内建支持使用阿里开发的Nacos作为注册中心，实现服务注册与发现。需配置如下环境变量:
 
-- `GDD_SERVICE_NAME`: Service name, required
-- `GDD_NACOS_SERVER_ADDR`: Nacos server address, required
-- `GDD_SERVICE_DISCOVERY_MODE`: Service discovery mechanism name, required
+- `GDD_SERVICE_NAME`: 服务名称，必须
+- `GDD_NACOS_SERVER_ADDR`: Nacos服务端地址
+- `GDD_SERVICE_DISCOVERY_MODE`: 服务发现机制名称
 
 ```shell
 GDD_SERVICE_NAME=test-svc # Required
@@ -42,11 +42,11 @@ GDD_SERVICE_DISCOVERY_MODE=nacos # Required
 
 ### Zookeeper
 
-`go-doudou` has built-in support for using Zookeeper as a registry center for service registration and discovery. The following environment variables need to be configured:
+`go-doudou`内建支持使用Zookeeper作为注册中心，实现服务注册与发现。需配置如下环境变量:
 
-- `GDD_SERVICE_NAME`: Service name, required
-- `GDD_SERVICE_DISCOVERY_MODE`: Service discovery mechanism name, required
-- `GDD_ZK_SERVERS`: Zookeeper server address, required
+- `GDD_SERVICE_NAME`: 服务名称，必须
+- `GDD_SERVICE_DISCOVERY_MODE`: 服务发现机制名称，必须
+- `GDD_ZK_SERVERS`: Nacos服务端地址，必须
 
 ```shell
 GDD_SERVICE_NAME=cloud.unionj.ServiceB # Required
@@ -57,22 +57,22 @@ GDD_SERVICE_GROUP=group
 GDD_SERVICE_VERSION=v2.2.2
 ```
 
-## Client-side Load Balancing
+## 客户端负载均衡
 
-### Simple Round Robin Load Balancing (For Etcd)
+### 简单轮询负载均衡 (Etcd用)
 
-You need to call `etcd.NewRRGrpcClientConn("service name registered in etcd", tlsOption)` to create a `*grpc.ClientConn` instance.
+需调用 `etcd.NewRRGrpcClientConn("注册在etcd中的服务名称", tlsOption)` 创建 `*grpc.ClientConn` 实例。
 
 ```go
 func main() {
-  // Need to close the etcd client before the program exits
+  // 程序退出前需要关闭etcd客户端
 	defer etcd.CloseEtcdClient()
 	conf := config.LoadFromEnv()
 
 	tlsOption := grpc.WithTransportCredentials(insecure.NewCredentials())
-  // Create a gRPC connection that supports etcd simple round robin load balancing mechanism
+  // 创建支持etcd简单轮询负载均衡机制的gRPC连接
 	grpcConn := etcd.NewRRGrpcClientConn("grpcdemo-server_grpc", tlsOption)
-  // Need to close the gRPC connection before the program exits
+  // 程序退出前需要关闭gRPC连接
 	defer grpcConn.Close()
 
 	svc := service.NewEnumDemo(conf, pb.NewHelloworldServiceClient(grpcConn),
@@ -84,20 +84,20 @@ func main() {
 }
 ```
 
-### Smooth Weighted Round Robin Load Balancing (For Etcd)
+### 平滑加权轮询负载均衡 (Etcd用)
 
-You need to call `etcd.NewSWRRGrpcClientConn("service name registered in etcd", tlsOption)` to create a `*grpc.ClientConn` instance.
+需调用 `etcd.NewSWRRGrpcClientConn("注册在etcd中的服务名称", tlsOption)` 创建 `*grpc.ClientConn` 实例。
 
 ```go
 func main() {
-  // Need to close the etcd client before the program exits
+  // 程序退出前需要关闭etcd客户端
 	defer etcd.CloseEtcdClient()
 	conf := config.LoadFromEnv()
 
 	tlsOption := grpc.WithTransportCredentials(insecure.NewCredentials())
-  // Create a gRPC connection that supports etcd smooth weighted round robin load balancing mechanism (SWRR)
+  // 创建支持etcd平滑加权轮询负载均衡机制(SWRR)的gRPC连接
 	grpcConn := etcd.NewSWRRGrpcClientConn("grpcdemo-server_grpc", tlsOption)
-  // Need to close the gRPC connection before the program exits
+  // 程序退出前需要关闭gRPC连接
 	defer grpcConn.Close()
 
 	svc := service.NewEnumDemo(conf, pb.NewHelloworldServiceClient(grpcConn))
@@ -108,23 +108,23 @@ func main() {
 }
 ```
 
-### Simple Round Robin Load Balancing (For Nacos)
+### 简单轮询负载均衡 (nacos用)
 
-Call the `nacos.NewRRGrpcClientConn` method to create a gRPC connection.
+调用 `nacos.NewRRGrpcClientConn` 方法，创建gRPC连接。 
 
 ```go
 func main() {
-  // Need to close the nacos client before the program exits
+  // 程序退出前需要关闭nacos客户端
 	defer nacos.CloseNamingClient()
 	conf := config.LoadFromEnv()
 
 	tlsOption := grpc.WithTransportCredentials(insecure.NewCredentials())
 
-	// Create a gRPC connection that supports nacos simple round robin load balancing mechanism
+	// 创建支持nacos简单轮询负载均衡机制的gRPC连接
 	grpcConn := nacos.NewRRGrpcClientConn(nacos.NacosConfig{
 		ServiceName: "grpcdemo-server_grpc",
 	}, tlsOption)
-  // Need to close the gRPC connection before the program exits
+  // 程序退出前需要关闭gRPC连接
 	defer grpcConn.Close()
 
 
@@ -136,23 +136,23 @@ func main() {
 }
 ```
 
-### Weighted Round Robin Load Balancing (For Nacos)
+### 加权轮询负载均衡 (nacos用)
 
-Call the `nacos.NewWRRGrpcClientConn` method to create a gRPC connection.
+调用 `nacos.NewWRRGrpcClientConn` 方法，创建gRPC连接。 
 
 ```go
 func main() {
-  // Need to close the nacos client before the program exits
+  // 程序退出前需要关闭nacos客户端
 	defer nacos.CloseNamingClient()
 	conf := config.LoadFromEnv()
 
 	tlsOption := grpc.WithTransportCredentials(insecure.NewCredentials())
 
-	// Create a gRPC connection that supports nacos weighted round robin load balancing mechanism
+	// 创建支持nacos加权轮询负载均衡机制的gRPC连接
 	grpcConn := nacos.NewWRRGrpcClientConn(nacos.NacosConfig{
 		ServiceName: "grpcdemo-server_grpc",
 	}, tlsOption)
-  // Need to close the gRPC connection before the program exits
+  // 程序退出前需要关闭gRPC连接
 	defer grpcConn.Close()
 
 
@@ -164,9 +164,9 @@ func main() {
 }
 ```
 
-### Simple Round Robin Load Balancing (For Zookeeper)
+### 简单轮询负载均衡 (zookeeper用)
 
-Call the `zk.NewRRGrpcClientConn` method to create a gRPC connection.
+调用 `zk.NewRRGrpcClientConn` 方法，创建gRPC连接。 
 
 ```go
 func main() {
@@ -197,11 +197,15 @@ func main() {
 		Version: "",
 	}, dialOptions...)
 	defer grpcConn.Close()
+
+	svc := service.NewServiceA(conf, bClient, pb.NewServiceBServiceClient(grpcConn))
+	...
+}
 ```
 
-### Weighted Round Robin Load Balancing (For Zookeeper)
+### 加权轮询负载均衡 (zookeeper用)
 
-Call the `zk.NewSWRRGrpcClientConn` method to create a gRPC connection.
+调用 `zk.NewSWRRGrpcClientConn` 方法，创建gRPC连接。 
 
 ```go
 func main() {
@@ -238,13 +242,13 @@ func main() {
 }
 ```
 
-## Authentication and Authorization
+## 登录鉴权
 
-`go-doudou` has built-in interceptors `grpcx_auth.UnaryServerInterceptor` and `grpcx_auth.StreamServerInterceptor` for login authorization in the `framework/grpcx/interceptors/grpcx_auth` package, as well as the `grpcx_auth.Authorizer` interface. Developers can implement their own `grpcx_auth.Authorizer` interface. Below is a usage example:
+`go-doudou` 的 `framework/grpcx/interceptors/grpcx_auth` 包里内置了登录授权相关的拦截器 `grpcx_auth.UnaryServerInterceptor` 和 `grpcx_auth.StreamServerInterceptor`，以及接口 `grpcx_auth.Authorizer`。开发者可以自定义 `grpcx_auth.Authorizer` 的接口实现。以下是用法示例：
 
-### Interface Definition
+### 接口定义
 
-Note the `@role` annotation above the interface method definition. For `go-doudou` annotation usage, please refer to the relevant section in the official documentation: "Guide->Interface Definition->Annotations->Usage in gRPC Services".
+请注意接口方法定义上方的`@role`注解。`go-doudou` 的注解用法请参考官方文档的 `指南->接口定义->注解->gRPC服务中的使用方法` 相关章节。
 
 ```go
 package service
@@ -255,20 +259,20 @@ import "context"
 //go:generate go-doudou svc grpc
 
 type Annotation interface {
-	// This interface is publicly accessible, no need to check login and permissions
+	// 此接口可公开访问，无需校验登录和权限
 	GetGuest(ctx context.Context) (data string, err error)
-	// This interface is only accessible to logged-in users
+	// 此接口只有登录用户有权访问
 	// @role(USER,ADMIN)
 	GetUser(ctx context.Context) (data string, err error)
-	// This interface is only accessible to administrators
+	// 此接口只有管理员有权访问
 	// @role(ADMIN)
 	GetAdmin(ctx context.Context) (data string, err error)
 }
 ```
 
-### grpcx_auth.Authorizer Interface Implementation
+### grpcx_auth.Authorizer接口实现
 
-Below is an example of a custom `grpcx_auth.Authorizer` interface implementation based on HTTP basic authentication:
+以下是基于http basic登录鉴权的自定义 `grpcx_auth.Authorizer` 接口实现的示例代码：
 
 ```go
 package grpc
@@ -286,25 +290,25 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Ensure that AuthInterceptor struct implements grpcx_auth.Authorizer interface
+// 确保AuthInterceptor结构体实现grpcx_auth.Authorizer接口
 var _ grpcx_auth.Authorizer = (*AuthInterceptor)(nil)
 
-// AuthInterceptor is an implementation of the grpcx_auth.Authorizer interface
+// AuthInterceptor是grpcx_auth.Authorizer接口的实现
 type AuthInterceptor struct {
-	// For simplicity, we use an in-memory data structure to simulate a database user role table,
-	// but in a real project, you would typically define a database connection instance as a member variable,
-	// using a real database to query user tables, role tables, permission tables, etc.
+	// 此处为了简单，采用模拟数据库用户角色表的基于内存的数据结构，
+	// 但实际项目中通常会定义一个数据库连接实例作为成员变量，
+	// 采用真实的数据库来查询用户表、角色表、权限表等
 	userStore vo.UserStore
 }
 
-// NewAuthInterceptor is a factory method to create an AuthInterceptor struct instance
+// NewAuthInterceptor是创建AuthInterceptor结构体实例的工厂方法
 func NewAuthInterceptor(userStore vo.UserStore) *AuthInterceptor {
 	return &AuthInterceptor{
 		userStore: userStore,
 	}
 }
 
-// Parse HTTP basic token, return username and password
+// 解析http basic token，返回用户名和密码
 func parseToken(token string) (username, password string, ok bool) {
 	c, err := base64.StdEncoding.DecodeString(token)
 	if err != nil {
@@ -318,33 +322,33 @@ func parseToken(token string) (username, password string, ok bool) {
 	return username, password, true
 }
 
-// Authorize method implements the grpcx_auth.Authorizer interface
+// Authorize方法实现了grpcx_auth.Authorizer接口
 func (interceptor *AuthInterceptor) Authorize(ctx context.Context, fullMethod string) (context.Context, error) {
 	method := fullMethod[strings.LastIndex(fullMethod, "/")+1:]
-	// For go-doudou annotation usage, please refer to the "Guide->Interface Definition->Annotations->Usage in gRPC Services" section in the official documentation
-	// If the gRPC method definition does not have the @role annotation, it means it can be publicly accessed without authentication, so let it pass directly
+	// go-doudou的注解用法请参考官方文档的"指南->接口定义->注解->gRPC服务中的使用方法"章节
+	// 如果gRPC方法定义没有@role注解，则表示可以公开访问，无须鉴权，直接放行
 	if !MethodAnnotationStore.HasAnnotation(method, "@role") {
 		return ctx, nil
 	}
-	// This depends on the auth package from the third-party open-source library github.com/grpc-ecosystem/go-grpc-middleware
-	// Extract the HTTP basic token from metadata
+	// 此处依赖了第三方开源库github.com/grpc-ecosystem/go-grpc-middleware的auth包
+	// 从metadata里提取http basic token
 	token, err := grpc_auth.AuthFromMD(ctx, "Basic")
 	if err != nil {
 		return ctx, err
 	}
-	// Parse the HTTP basic token, returning username and password
+	// 解析http basic token，返回用户名和密码
 	user, pass, ok := parseToken(token)
 	if !ok {
 		return ctx, status.Error(codes.Unauthenticated, "Provide user name and password")
 	}
-	// Find the role of the user through username and password
+	// 通过用户名和密码查到该用户的角色
 	role, exists := interceptor.userStore[vo.Auth{user, pass}]
 	if !exists {
 		return ctx, status.Error(codes.Unauthenticated, "Provide user name and password")
 	}
-	// Get the list of roles that can access the gRPC method from MethodAnnotationStore
+	// 从MethodAnnotationStore中查出可以访问该gRPC方法的角色列表
 	params := MethodAnnotationStore.GetParams(method, "@role")
-	// Check if the user's role is included in the role list, if it is, the authentication passes, if not, access is denied
+	// 判断该用户的角色是否包含在角色列表中，如果在，则通过了鉴权，如果不在，则拒绝访问
 	if !sliceutils.StringContains(params, role.StringGetter()) {
 		return ctx, status.Error(codes.PermissionDenied, "Access denied")
 	}
@@ -352,7 +356,7 @@ func (interceptor *AuthInterceptor) Authorize(ctx context.Context, fullMethod st
 }
 ```
 
-### Main Function
+### main函数
 
 ```go
 func main() {
@@ -360,7 +364,7 @@ func main() {
 
 	svc := service.NewAnnotation(conf)
 
-  // In-memory data structure simulating a database user role table
+  // 模拟数据库用户角色表的基于内存的数据结构
 	userStore := vo.UserStore{
 		vo.Auth{
 			User: "guest",
@@ -376,7 +380,7 @@ func main() {
 		}: vo.ADMIN,
 	}
 
-  // Create a custom implementation of the grpcx_auth.Authorizer interface
+  // 创建自定义的grpcx_auth.Authorizer接口实现
 	authorizer := pb.NewAuthInterceptor(userStore)
 
 	grpcServer := grpcx.NewGrpcServer(
@@ -385,7 +389,7 @@ func main() {
 			grpc_opentracing.StreamServerInterceptor(),
 			grpc_prometheus.StreamServerInterceptor,
 			logging.StreamServerInterceptor(grpczerolog.InterceptorLogger(zlogger.Logger)),
-			// Pass the authorizer to the grpcx_auth interceptor
+			// 将authorizer传入grpcx_auth拦截器中
 			grpcx_auth.StreamServerInterceptor(authorizer),
 			grpc_recovery.StreamServerInterceptor(),
 		)),
@@ -394,7 +398,7 @@ func main() {
 			grpc_opentracing.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
 			logging.UnaryServerInterceptor(grpczerolog.InterceptorLogger(zlogger.Logger)),
-			// Pass the authorizer to the grpcx_auth interceptor
+			// 将authorizer传入grpcx_auth拦截器中
 			grpcx_auth.UnaryServerInterceptor(authorizer),
 			grpc_recovery.UnaryServerInterceptor(),
 		)),
@@ -404,20 +408,21 @@ func main() {
 }
 ```
 
-## Rate Limiting
-### Usage
+## 限流
+### 用法
 
-`go-doudou` has built-in memory rate limiters based on the token bucket algorithm implemented with [golang.org/x/time/rate](https://pkg.go.dev/golang.org/x/time/rate).
+`go-doudou`内置了基于[golang.org/x/time/rate](https://pkg.go.dev/golang.org/x/time/rate)实现的令牌桶算法的内存限流器。
 
-In the `github.com/unionj-cloud/go-doudou/v2/framework/ratelimit/memrate` package, there is a `MemoryStore` struct that stores key and `Limiter` instance pairs. The `Limiter` instance is a rate limiter instance, and the key is the key for that rate limiter instance.
+在`github.com/unionj-cloud/go-doudou/v2/framework/ratelimit/memrate`包里有一个`MemoryStore`结构体，存储了key和`Limiter`实例对。`Limiter`实例是限流器实例，key是该限流器实例的键。
 
-You can pass an optional function `memrate.WithTimer` to the `memrate.NewLimiter` factory function to set a callback function for when the key's idle time exceeds `timeout`, for example, to delete the key from the `MemoryStore` instance to free up memory resources.
+你可以往`memrate.NewLimiter`工厂函数传入一个可选函数`memrate.WithTimer`，设置当key空闲时间超过`timeout`以后的回调函数，比如可以从`MemoryStore`实例里将该key删除，以释放内存资源。
 
-`go-doudou` also provides a redis rate limiter based on the GCRA rate limiting algorithm wrapped with the [go-redis/redis_rate](https://github.com/go-redis/redis_rate) library. This rate limiter supports cross-instance global rate limiting.
+`go-doudou`还提供了基于 [go-redis/redis_rate](https://github.com/go-redis/redis_rate) 库封装的GCRA限流算法的redis限流器。该限流器支持跨实例的全局限流。
 
-### Memory Rate Limiter Example
+### 内存限流器示例
 
-The memory rate limiter is based on local memory and only supports local rate limiting. First, you need to call `memrate.NewMemoryStore` to create a `MemoryStore` instance, which stores the keys to be limited and their corresponding rate limiters. Then call `grpcx_ratelimit.NewRateLimitInterceptor(grpcx_ratelimit.WithMemoryStore(mstore))` to create a `grpcx_ratelimit.RateLimitInterceptor` interceptor instance. Then you need to customize a structure that implements the `grpcx_ratelimit.KeyGetter` interface to implement the logic of extracting keys from `context.Context`. Finally, add the code `rl.UnaryServerInterceptor(keyGetter),` to the interceptor chain to implement rate limiting. Below is an example of rate limiting client IPs.
+内存限流器基于本机内存，只支持本机限流。首先需要调用 `memrate.NewMemoryStore` 创建一个 `MemoryStore` 实例，存储要限制的key和与之对应的限流器。然后调用 `grpcx_ratelimit.NewRateLimitInterceptor(grpcx_ratelimit.WithMemoryStore(mstore))` 创建一个 `grpcx_ratelimit.RateLimitInterceptor` 拦截器实例。然后需要自定义一个 `grpcx_ratelimit.KeyGetter` 接口的实现结构体，实现从 `context.Context` 提取key的逻辑。最后在拦截器链
+中加入代码 `rl.UnaryServerInterceptor(keyGetter),` 即可实现限流。下面是一个对客户端ip限流的示例。
 
 ```go
 func main() {
@@ -427,8 +432,8 @@ func main() {
 
 	go func() {
 		mstore := memrate.NewMemoryStore(func(_ context.Context, store *memrate.MemoryStore, key string) ratelimit.Limiter {
-      // Rate limiter creation function, which creates a rate limiter that allows processing 10 requests per second, with a peak of 30 requests, and a maximum idle time of 10 seconds. After being idle for more than 10 seconds, it will be removed from memory to free up memory space.
-      // The idle time should be at least greater than 1 / rate * burst to be meaningful, which means it should at least wait until the token bucket is refilled to its initial state.
+      // 限流器创建函数，表示创建一个每秒允许处理10次请求，峰值最多允许处理30次请求，同时空闲时间最长10秒的限流器。空闲超过10秒会从内存中删除，已释放内存空间。
+      // 空闲时间至少要大于 1 / rate * burst 才有意义，也就是至少要等令牌桶重新填满恢复初始状态以后。
 			return memrate.NewLimiter(10, 30, memrate.WithTimer(10*time.Second, func() {
 				store.DeleteKey(key)
 			}))
@@ -437,7 +442,7 @@ func main() {
 		keyGetter := &RateLimitKeyGetter{}
 		grpcServer := grpcx.NewGrpcServer(
 			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-        // In this example, the grpc_ctxtags interceptor must be added, which automatically adds the RPC caller's "peer.address" information to the context.Context
+        // 本示例中必须加grpc_ctxtags拦截器，它会自动帮我们往上下文context.Context中加入RPC调用方的"peer.address"信息
 				grpc_ctxtags.StreamServerInterceptor(),
 				grpc_opentracing.StreamServerInterceptor(),
 				grpc_prometheus.StreamServerInterceptor,
@@ -446,7 +451,7 @@ func main() {
 				grpc_recovery.StreamServerInterceptor(),
 			)),
 			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-        // In this example, the grpc_ctxtags interceptor must be added, which automatically adds the RPC caller's "peer.address" information to the context.Context
+        // 本示例中必须加grpc_ctxtags拦截器，它会自动帮我们往上下文context.Context中加入RPC调用方的"peer.address"信息
 				grpc_ctxtags.UnaryServerInterceptor(),
 				grpc_opentracing.UnaryServerInterceptor(),
 				grpc_prometheus.UnaryServerInterceptor,
@@ -466,7 +471,7 @@ func main() {
 }
 ```
 
-Custom implementation of the `grpcx_ratelimit.KeyGetter` interface:
+自定义 `grpcx_ratelimit.KeyGetter` 接口的实现结构体：
 
 ```go
 var _ grpcx_ratelimit.KeyGetter = (*RateLimitKeyGetter)(nil)
@@ -488,9 +493,9 @@ func (r *RateLimitKeyGetter) GetKey(ctx context.Context, _ string) string {
 }
 ```
 
-### Redis Rate Limiter Example
+### Redis限流器示例
 
-Redis rate limiters can be used in scenarios where multiple instances need to rate limit a key at the same time. **The key's expiration time equals the time required to generate 1 token based on the rate.**
+Redis限流器可以用于需要多个实例同时对一个key限流的场景。**key的过期时间等于根据速率计算的生成1个令牌所需的时间**。
 
 ```go
 func main() {
@@ -503,14 +508,14 @@ func main() {
 			Addr: "localhost:6379",
 		})
 		fn := redisrate.LimitFn(func(ctx context.Context) ratelimit.Limit {
-      // Rate limiter creation function, which creates a rate limiter that allows processing 10 requests per second, with a peak of 30 requests.
+      // 限流器创建函数，表示创建一个每秒允许处理10次请求，峰值最多允许处理30次请求的限流器。
 			return ratelimit.PerSecondBurst(10, 30)
 		})
 		rl := grpcx_ratelimit.NewRateLimitInterceptor(grpcx_ratelimit.WithRedisStore(rdb, fn))
 		keyGetter := &RateLimitKeyGetter{}
 		grpcServer := grpcx.NewGrpcServer(
 			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-        // In this example, the grpc_ctxtags interceptor must be added, which automatically adds the RPC caller's "peer.address" information to the context.Context
+        // 本示例中必须加grpc_ctxtags拦截器，它会自动帮我们往上下文context.Context中加入RPC调用方的"peer.address"信息
 				grpc_ctxtags.StreamServerInterceptor(),
 				grpc_opentracing.StreamServerInterceptor(),
 				grpc_prometheus.StreamServerInterceptor,
@@ -519,7 +524,7 @@ func main() {
 				grpc_recovery.StreamServerInterceptor(),
 			)),
 			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-        // In this example, the grpc_ctxtags interceptor must be added, which automatically adds the RPC caller's "peer.address" information to the context.Context
+        // 本示例中必须加grpc_ctxtags拦截器，它会自动帮我们往上下文context.Context中加入RPC调用方的"peer.address"信息
 				grpc_ctxtags.UnaryServerInterceptor(),
 				grpc_opentracing.UnaryServerInterceptor(),
 				grpc_prometheus.UnaryServerInterceptor,
@@ -539,11 +544,11 @@ func main() {
 }
 ```
 
-For a custom implementation of the `grpcx_ratelimit.KeyGetter` interface, please refer to the memory rate limiter example above.
+自定义 `grpcx_ratelimit.KeyGetter` 接口的实现结构体示例请参考上文内存限流器示例。
 
-## Retry
+## 重试 
 
-To implement the retry mechanism, you need to depend on the `retry` module of the third-party open-source library `github.com/grpc-ecosystem/go-grpc-middleware`. Add the retry interceptor to the `dialOptions` slice, and then pass `dialOptions` as a parameter to the load balancing client factory function to create a gRPC client connection instance. For specific usage, please refer to the comments in the source code: [https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/retry](https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/retry).
+实现重试机制需要依赖第三方开源库 `github.com/grpc-ecosystem/go-grpc-middleware` 的  `retry` 模块，将重试拦截器加入 `dialOptions` 切片中，再将 `dialOptions` 作为入参放入负载均衡客户端工厂函数中创建gRPC客户端连接实例。具体用法请参考源码中的注释：[https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/retry](https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/retry)。
 
 ```go
 tlsOption := grpc.WithTransportCredentials(insecure.NewCredentials())
@@ -569,36 +574,36 @@ grpcConn := nacos.NewWRRGrpcClientConn(nacos.NacosConfig{
 defer grpcConn.Close()
 ```
 
-## Logging
+## 日志
 
-### Usage
+### 用法
 
-`go-doudou` has a global `zerolog.Logger` built into the `github.com/unionj-cloud/go-doudou/v2/toolkit/zlogger` package. If the `GDD_ENV` environment variable is not equal to an empty string and `dev`, it will include some metadata about the service itself.
+`go-doudou`在`github.com/unionj-cloud/go-doudou/v2/toolkit/zlogger`包里内置了一个全局的`zerolog.Logger`。如果`GDD_ENV`环境变量不等于空字符串和`dev`，则会带上一些关于服务本身的元数据。
 
-You can also call the `InitEntry` function to customize the `zerolog.Logger` instance.
+你也可以调用`InitEntry`函数自定义`zerolog.Logger`实例。
 
-You can also set the log level by configuring the `GDD_LOG_LEVEL` environment variable, and set whether the log format is `json` or `text` by configuring the `GDD_LOG_FORMAT` environment variable.
+你还可以通过配置`GDD_LOG_LEVEL`环境变量来设置日志级别，配置`GDD_LOG_FORMAT`环境变量来设置日志格式是`json`还是`text`。
 
-You can enable HTTP request and response log printing by configuring `GDD_LOG_REQ_ENABLE=true`. The default is `false`, which means no printing.
+你可以通过配置`GDD_LOG_REQ_ENABLE=true`来开启http请求和响应的日志打印，默认是`false`，即不打印。
 
-### Example
+### 示例
 
 ```go 
-// You can use the lumberjack library to add log rotation functionality to your service
+// 你可以用lumberjack这个库给服务增加日志rotate的功能
 zlogger.SetOutput(io.MultiWriter(os.Stdout, &lumberjack.Logger{
 			Filename:   filepath.Join(os.Getenv("LOG_PATH"), fmt.Sprintf("%s.log", "usersvc")),
-		  MaxSize:    5,  // Single log file maximum size is 5M, exceeding this will create a new log file
-      MaxBackups: 10, // Keep a maximum of 10 log files
-      MaxAge:     7,  // Log files are kept for a maximum of 7 days
-      Compress:   true, // Whether to enable log compression
+		  MaxSize:    5,  // 单份日志文件最大5M，超过就会创建新的日志文件
+      MaxBackups: 10, // 最多保留10份日志文件
+      MaxAge:     7,  // 日志文件最长保留7天
+      Compress:   true, // 是否开启日志压缩
 }))
 ```
 
-### ELK Stack
+### ELK技术栈
 
-The `logger` package supports integration with the ELK stack.
+`logger`包支持集成ELK技术栈。
 
-#### Example
+#### 示例
 
 ```yaml
 version: '3.9'
@@ -646,17 +651,17 @@ networks:
         - subnet: 172.28.0.0/16
 ```
 
-#### Screenshot
+#### 截图
 
 ![elk](/images/elk.png)
 
-## Jaeger Call Chain Monitoring
+## Jaeger调用链监控
 
-### Usage
+### 用法
 
-To integrate Jaeger call chain monitoring, follow these steps:
+集成Jaeger调用链监控需要以下步骤：
 
-1. Start Jaeger
+1. 启动Jaeger
 
 ```shell
 docker run -d --name jaeger \
@@ -665,14 +670,14 @@ docker run -d --name jaeger \
   jaegertracing/all-in-one:1.29
 ```
 
-2. Add two lines of configuration to the `.env` file
+2. 给`.env`文件添加两行配置
 
 ```shell
 JAEGER_AGENT_HOST=localhost
 JAEGER_AGENT_PORT=6831
 ```
 
-3. Add three lines of code near the beginning of the `main` function
+3. 在`main`函数里靠前的位置添加三行代码
 
 ```go
 tracer, closer := tracing.Init()
@@ -680,7 +685,7 @@ defer closer.Close()
 opentracing.SetGlobalTracer(tracer)
 ```
 
-4. On the server side, when calling the `grpcx.NewGrpcServer` function to create a `grpcx.GrpcServer` instance, add the opentracing interceptor with the two lines of code `grpc_opentracing.StreamServerInterceptor(),` and `grpc_opentracing.UnaryServerInterceptor(),`
+4. 服务端在调用 `grpcx.NewGrpcServer` 函数创建 `grpcx.GrpcServer` 实例时通过 `grpc_opentracing.StreamServerInterceptor(),` 和 `grpc_opentracing.UnaryServerInterceptor(),` 两行代码加上opentracing拦截器  
 
 ```go
 func main() {
@@ -713,7 +718,7 @@ func main() {
 }
 ```
 
-5. The client also needs to add the opentracing interceptor to the gRPC client connection instance, so that when the client initiates a gRPC request, the opentracing implementation (jaeger) can inject the span id into the metadata, otherwise the call chain with the server cannot be linked together.
+5. 客户端也需要给grpc客户端连接实例加上opentracing拦截器，使客户端在发起gRPC请求的时候可以由opentracing实现（jaeger）将span id注入metadata，否则和服务端的调用链串不起来。
 
 ```go
 func main() {
@@ -751,6 +756,7 @@ func main() {
 }
 ```
 
-### Screenshots
+### 截图
 ![jaeger3](/images/jaeger3.jpeg)
-![jaeger4](/images/jaeger4.jpeg)
+![jaeger4](/images/jaeger4.jpeg)  
+

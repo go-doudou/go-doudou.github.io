@@ -1,32 +1,35 @@
 import type { SidebarConfig } from '@vuepress/theme-default'
 
 export const zh: SidebarConfig = {
-  '/guide/': [
+  '/zh/guide/': [
     {
       text: '指南',
       children: [
-        '/guide/README.md',
-        '/guide/getting-started.md',
-        '/guide/idl.md',
-        '/guide/cli.md',
-        '/guide/generation.md',
-        '/guide/rest.md',
-        '/guide/grpc.md',
-        '/guide/configuration.md',
-        '/guide/deployment.md',
+        '/zh/guide/README.md',
+        '/zh/guide/getting-started.md',
+        '/zh/guide/idl.md',
+        '/zh/guide/cli.md',
+        '/zh/guide/generation.md',
+        '/zh/guide/rest.md',
+        '/zh/guide/grpc.md',
+        '/zh/guide/configuration.md',
+        '/zh/guide/deployment.md',
       ],
     },
   ],
-  '/orm/': [
+  '/zh/blog/': [
     {
-      text: 'ORM',
+      text: '博客',
       children: [
-        '/orm/README.md',
-        '/orm/getting-started.md',
-        '/orm/ddl.md',
-        '/orm/dsl.md',
-        '/orm/log.md',
-        '/orm/cache.md',
+        '/zh/blog/README.md',
+        '/zh/blog/memberlist.md',
+        '/zh/blog/pm2.md',
+        '/zh/blog/enum.md',
+        '/zh/blog/annotation.md',
+        '/zh/blog/v2.0.5.md',
+        '/zh/blog/go_doudou_dubbo_go.md',
+        '/zh/blog/gormgen.md',
+        '/zh/blog/cli-commands.md',
       ],
     },
   ],
