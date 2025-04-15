@@ -1,0 +1,1 @@
+const e={key:"v-233ba3f8",path:"/zh/orm/cache.html",title:"Cache\u6A21\u5757",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1744490038e3,contributors:[{name:"\u6B66\u658C",email:"wubinwill@gmail.com",commits:1}]},filePathRelative:"zh/orm/cache.md"};export{e as data};

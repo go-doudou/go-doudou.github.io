@@ -1,0 +1,1 @@
+const t={key:"v-2906fbe9",path:"/zh/orm/dsl.html",title:"Sql\u8BED\u53E5\u6784\u9020\u5668",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1744490038e3,contributors:[{name:"\u6B66\u658C",email:"wubinwill@gmail.com",commits:1}]},filePathRelative:"zh/orm/dsl.md"};export{t as data};
