@@ -30,6 +30,7 @@ export const en: SidebarConfig = {
         '/blog/go_doudou_dubbo_go.md',
         '/blog/gormgen.md',
         '/blog/cli-commands.md',
+        '/blog/plugin-mechanism.md',
       ],
     },
   ],

@@ -30,6 +30,7 @@ export const zh: SidebarConfig = {
         '/zh/blog/go_doudou_dubbo_go.md',
         '/zh/blog/gormgen.md',
         '/zh/blog/cli-commands.md',
+        '/zh/blog/plugin-mechanism.md',
       ],
     },
   ],
