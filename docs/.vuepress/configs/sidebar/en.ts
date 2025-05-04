@@ -31,6 +31,7 @@ export const en: SidebarConfig = {
         '/blog/gormgen.md',
         '/blog/cli-commands.md',
         '/blog/plugin-mechanism.md',
+        '/blog/go-doudou-microkernel-app-en.md',
       ],
     },
   ],

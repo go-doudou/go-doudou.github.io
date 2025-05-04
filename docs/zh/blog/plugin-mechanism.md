@@ -1,3 +1,7 @@
+---
+sidebar: auto
+---
+
 # go-doudou + langchaingo 微内核架构RAG大模型知识库实战（一）
 
 ![programming.jpg](./go-doudou_langchaingo.png)

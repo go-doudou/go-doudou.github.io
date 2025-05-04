@@ -31,6 +31,7 @@ export const zh: SidebarConfig = {
         '/zh/blog/gormgen.md',
         '/zh/blog/cli-commands.md',
         '/zh/blog/plugin-mechanism.md',
+        '/zh/blog/go-doudou-microkernel-app.md',
       ],
     },
   ],

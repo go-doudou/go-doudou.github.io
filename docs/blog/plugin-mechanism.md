@@ -1,3 +1,7 @@
+---
+sidebar: auto
+---
+
 # go-doudou + langchaingo Microkernel Architecture RAG Large Language Model Knowledge Base Practice (Part 1)
 
 ![programming.jpg](./go-doudou_langchaingo.png)

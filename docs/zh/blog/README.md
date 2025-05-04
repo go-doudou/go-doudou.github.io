@@ -9,3 +9,4 @@
 - [go后端开发神器来了！基于gorm从数据库一键生成RESTful和gRPC微服务](./gormgen.md)
 - [go-doudou CLI命令行工具详解](./cli-commands.md)
 - [go-doudou + langchaingo 微内核架构RAG大模型知识库实战（一）](./plugin-mechanism.md)
+- [go-doudou + langchaingo 微内核架构RAG大模型知识库实战（二）](./go-doudou-microkernel-app.md)
