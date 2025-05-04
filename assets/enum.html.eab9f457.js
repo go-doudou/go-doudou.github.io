@@ -1,0 +1,1 @@
+const t={key:"v-66a2a573",path:"/zh/blog/enum.html",title:"\u5982\u4F55\u5728go-doudou\u5E94\u7528\u4E2D\u4F7F\u7528\u679A\u4E3E\u7C7B\u578B",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1744490038e3,contributors:[{name:"\u6B66\u658C",email:"wubinwill@gmail.com",commits:1}]},filePathRelative:"zh/blog/enum.md"};export{t as data};
