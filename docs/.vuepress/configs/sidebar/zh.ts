@@ -32,6 +32,7 @@ export const zh: SidebarConfig = {
         '/zh/blog/cli-commands.md',
         '/zh/blog/plugin-mechanism.md',
         '/zh/blog/go-doudou-microkernel-app.md',
+        '/zh/blog/go-doudou-frontend-integration.md',
       ],
     },
   ],

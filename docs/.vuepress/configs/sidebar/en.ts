@@ -32,6 +32,7 @@ export const en: SidebarConfig = {
         '/blog/cli-commands.md',
         '/blog/plugin-mechanism.md',
         '/blog/go-doudou-microkernel-app-en.md',
+        '/blog/go-doudou-frontend-integration-en.md',
       ],
     },
   ],

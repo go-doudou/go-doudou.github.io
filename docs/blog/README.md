@@ -9,4 +9,5 @@
 - [Go Backend Development Tool is Here! Generate RESTful and gRPC Microservices from Database with gorm](./gormgen.md)
 - [Detailed Guide to go-doudou CLI Commands](./cli-commands.md)
 - [go-doudou + langchaingo Microkernel Architecture RAG Large Language Model Knowledge Base Practice (Part 1)](./plugin-mechanism.md)
-- [go-doudou + langchaingo Microkernel Architecture RAG Large Language Model Knowledge Base Practice (Part 2)](./go-doudou-microkernel-app-en.md) 
+- [go-doudou + langchaingo Microkernel Architecture RAG Large Language Model Knowledge Base Practice (Part 2)](./go-doudou-microkernel-app-en.md)
+- [go-doudou + langchaingo Microkernel Architecture RAG Large Language Model Knowledge Base Practice (Part 3)](./go-doudou-frontend-integration-en.md) 
