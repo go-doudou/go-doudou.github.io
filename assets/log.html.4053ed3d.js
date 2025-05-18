@@ -1,0 +1,1 @@
+const t={key:"v-e8218a7c",path:"/zh/orm/log.html",title:"Sql\u67E5\u8BE2\u65E5\u5FD7\u8F93\u51FA",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1744490038e3,contributors:[{name:"\u6B66\u658C",email:"wubinwill@gmail.com",commits:1}]},filePathRelative:"zh/orm/log.md"};export{t as data};
